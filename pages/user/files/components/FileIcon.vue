@@ -22,7 +22,7 @@ const props = defineProps(['row'])
       style="zoom: .3;"
       v-if="props.row.fileType == 'img'"
       width="100"
-      :src="`http://127.0.0.1:8080/stream/download_file?file_id=${props.row.fileId}&type=img`"
+      :src="`/api/stream/download_file?file_id=${props.row.fileId}&type=img`"
   />
 </template>
 

@@ -152,7 +152,7 @@ const init = async () => {
 }
 
 const init_ws = async () => {
-  creatWebSocket(`ws://127.0.0.1:8080/wsInterface/${user.value.token}`)
+  creatWebSocket(`/api/wsInterface/${user.value.token}`)
 }
 
 onMounted(async () => {
