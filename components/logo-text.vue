@@ -1,7 +1,10 @@
 <script setup lang="ts">
 import {ref, reactive, onMounted} from "vue";
 import { useThemeVars } from 'naive-ui'
+import {useSettingStore} from "~/store/UseSettingStore";
+import {storeToRefs} from "pinia";
 
+const set = storeToRefs(useSettingStore())?.setting
 const dark = ref(false)
 onMounted(()=>{
   const theme = useThemeVars()
@@ -16,8 +19,8 @@ onMounted(()=>{
 </script>
 
 <template>
-  <img v-if="!dark" src="~/assets/img/logo-text-black.png" width="120" style="display: flex" alt="">
-  <img v-else src="~/assets/img/logo-text-white.png" width="120" style="display: flex" alt="">
+  <img v-if="!dark" :src="set.logoTextBlack" width="50" style="margin-left: .5rem" alt="">
+  <img v-else :src="set.logoTextWhite" width="50" style="margin-left: .5rem"  alt="">
 </template>
 
 <style scoped>

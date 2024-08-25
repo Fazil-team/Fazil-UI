@@ -94,3 +94,11 @@ export const remove_file = (file_id) => {
         })
     })
 }
+
+export const new_folder = (data)=>{
+    return new Promise(r=>{
+        service.post("/stream/folder", data).then(res=>{
+            r(res)
+        })
+    })
+}

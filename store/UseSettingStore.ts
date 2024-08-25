@@ -12,6 +12,14 @@ export type Setting = {
 }
 
 export const useSettingStore = defineStore('SysSetting', () => {
-    let setting: Ref<Setting | undefined> = ref()
+    let setting: Ref<Setting | undefined> = ref({
+        id: 0,
+        title: '',
+        loginBgImg: '',
+        logoSmall: '',
+        logo: '',
+        logoTextBlack: '',
+        logoTextWhite: ''
+    })
     return { setting };
 })

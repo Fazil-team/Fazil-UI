@@ -3,9 +3,10 @@ import * as msg from '~/assets/utils/message'
 import {useLayoutStore} from "~/store/UseLayoutStore";
 import {storeToRefs} from "pinia";
 import {navigateTo} from "#app/composables/router";
+import {baseURL} from "assets/config/network.js";
 
 export const service = request.create({
-    baseURL: '/api'
+    baseURL: baseURL
 })
 
 

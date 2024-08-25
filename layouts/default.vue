@@ -29,6 +29,7 @@ import {CloseOutlined} from '@vicons/antd'
 import {creatWebSocket} from '@/assets/utils/websocket'
 import {size2Str} from "../assets/utils/commons.js";
 import {get_user_storage} from "~/layouts/apis";
+import {wsURL} from "assets/config/network.js";
 
 const links = ref([])
 const user = storeToRefs(useUserStore()).user_info
@@ -152,7 +153,7 @@ const init = async () => {
 }
 
 const init_ws = async () => {
-  creatWebSocket(`/api/wsInterface/${user.value.token}`)
+  creatWebSocket(`${wsURL}/wsInterface/${user.value.token}`)
 }
 
 onMounted(async () => {
@@ -330,19 +331,19 @@ const cancel_download = (id) => {
               </div>
             </div>
           </n-layout-header>
-          <n-layout-header bordered style="height: 3rem;display: flex;align-items: center;padding: 0 1rem">
-            <n-space id="space" style="flex-flow: nowrap;overflow: auto">
-              <n-tag :disabled="item.checked" @click="navigateTo(item.path)" checkable closable round @checkedChange="val=>{
-               return false
-              }" v-for="item in links" v-model:checked="item.checked" type="info"
-                     style="cursor: pointer;">
-                {{ item.title }}
-                <CloseOutlined style="width: 10px"></CloseOutlined>
-              </n-tag>
-            </n-space>
-          </n-layout-header>
+<!--          <n-layout-header bordered style="height: 3rem;display: flex;align-items: center;padding: 0 1rem">-->
+<!--            <n-space id="space" style="flex-flow: nowrap;overflow: auto">-->
+<!--              <n-tag :disabled="item.checked" @click="navigateTo(item.path)" checkable closable round @checkedChange="val=>{-->
+<!--               return false-->
+<!--              }" v-for="item in links" v-model:checked="item.checked" type="info"-->
+<!--                     style="cursor: pointer;">-->
+<!--                {{ item.title }}-->
+<!--                <CloseOutlined style="width: 10px"></CloseOutlined>-->
+<!--              </n-tag>-->
+<!--            </n-space>-->
+<!--          </n-layout-header>-->
           <n-layout-content bordered
-                            style="height: calc(100vh - 9rem);display: flex;align-items: center;padding: 1rem 1rem;width: 100%;">
+                            style="height: calc(100vh - 6rem);display: flex;align-items: center;padding: 1rem 1rem;width: 100%;">
             <NuxtPage/>
           </n-layout-content>
           <n-layout-footer bordered style="height: 3rem;display: flex;align-items: center;padding: 0 0 0 1rem">Powered

@@ -7,13 +7,16 @@ import * as apis from './apis'
 import {size2Str} from "assets/utils/commons";
 import FileIcon from './components/FileIcon.vue'
 import Upload_file_dialog from "~/pages/user/files/dialogs/upload_file_dialog.vue";
+import Create_folder_dialog from "~/pages/user/files/dialogs/create_folder_dialog.vue";
 
+let id = useRouter().currentRoute.value.params.id;
 const upload_file_dialog = ref()
 const loading = ref(false)
 const height = ref("400px")
 const x = ref(0)
 const y = ref(0)
 const showDropdown = ref()
+const createFolderRef = ref()
 const columns = [
   {
     title: '',
@@ -46,17 +49,19 @@ const columns = [
     width: '100',
     render(row) {
       return h('div', null, [
-          h(NButton, {
-            onClick: ()=>{
-              apis.add_download_task(row)
-            }
-          }, '下载')
+        h(NButton, {
+          onClick: () => {
+            apis.add_download_task(row)
+          }
+        }, '下载')
       ])
     }
   }
 ]
 const tb_data = ref([{}])
 const checkedRowKeys = ref([])
+const filePath = ref('/')
+const filePid = ref(0)
 const pagination = reactive({
   page: 1, //受控模式下的当前页
   pageSize: 10, //受控模式下的分页大小,每一页的数据大小
@@ -81,11 +86,11 @@ const pagination = reactive({
 
 const init = () => {
   loading.value = true
-  height.value = `calc(100vh - ${document.querySelector(".n-card").clientHeight}px - 2rem - 6rem - 10rem)`;
+  height.value = `calc(100vh - ${document.querySelector(".n-card").clientHeight}px - 2rem - 6rem - 10rem - 2.3rem)`;
   apis.load_files({
     current_page: pagination.page,
     page_size: pagination.pageSize,
-    filePid: 0
+    path: filePath.value
   }).then(res => {
     loading.value = false
     tb_data.value = res.data.data.data
@@ -130,7 +135,7 @@ const handleSelect = (str) => {
       apis.add_download_task(current)
       break
     case 'delete':
-      apis.remove_file(current.fileId).then(res=>{
+      apis.remove_file(current.fileId).then(res => {
         init()
       })
       break
@@ -156,6 +161,22 @@ const rowProps = (row) => {
         x.value = e.clientX;
         y.value = e.clientY;
       });
+    },
+    onClick: () => {
+      if (row.fileType == 'folder') {
+        let path = ''
+        if (useRouter().currentRoute.value.path == '/user/files/') {
+          path = `/user/files/${row.fileName}`
+        } else {
+          path = `${useRouter().currentRoute.value.path}/${row.fileName}`
+        }
+        console.log(path)
+        navigateTo({
+          path: path
+        })
+      } else {
+        console.log("文件")
+      }
     }
   };
 }
@@ -163,18 +184,44 @@ const rowProps = (row) => {
 onMounted(() => {
   init()
 })
+
+const path = () => {
+  let path = '/';
+  if (id) {
+    for (let i = 0; i < id.length; i++) {
+      path += `${id[i]}/`
+    }
+  }
+  filePath.value = path;
+
+  return path
+}
+
+const previous = ()=>{
+  let path = useRouter().currentRoute.value.path
+  var number = path.lastIndexOf("/");
+  let path1 = path.substring(0, number)
+  console.log(path1)
+  navigateTo({
+    path: path1
+  })
+}
 </script>
 
 <template>
   <div>
     <n-card id="active">
       <n-button style="margin-right: 1rem;" type="primary" @click="upload_file_dialog.dialog.show()">上传文件</n-button>
-      <n-button type="primary">创建文件夹</n-button>
+      <n-button style="margin-right: 1rem;" type="primary" @click="createFolderRef.dialog.show(filePath)">创建文件夹</n-button>
+      <n-button type="primary" @click="previous()">上一级</n-button>
     </n-card>
     <n-card style="margin-top: 1rem;">
       <template #header>
         查询结果
       </template>
+      <div style="height: 1.3rem;margin-bottom: 1rem;">
+       路径 {{ path() }}
+      </div>
       <n-data-table
           :style="{ height: `${height}` }"
           flex-height
@@ -202,10 +249,15 @@ onMounted(() => {
           @select="handleSelect"
       />
     </n-card>
-    <upload_file_dialog @upload_success="init()" ref="upload_file_dialog"/>
+    <upload_file_dialog :filePid="filePath" @upload_success="init()" ref="upload_file_dialog"/>
+    <create_folder_dialog @success="init()" ref="createFolderRef"/>
   </div>
 </template>
 
-<style scoped>
-
+<style scoped lang="scss">
+:deep(.n-scrollbar-container){
+  .n-data-table-tr{
+    cursor: pointer;
+  }
+}
 </style>

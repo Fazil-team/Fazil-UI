@@ -7,6 +7,7 @@ import Zip from "assets/icon/colorful/Zip.vue";
 import Executor from "assets/icon/colorful/Executor.vue";
 import Folder from "assets/icon/colorful/Folder.vue";
 import Image from "assets/icon/colorful/Imgae.vue"
+import {baseURL} from "assets/config/network.js";
 
 const props = defineProps(['row'])
 </script>
@@ -22,7 +23,7 @@ const props = defineProps(['row'])
       style="zoom: .3;"
       v-if="props.row.fileType == 'img'"
       width="100"
-      :src="`/api/stream/download_file?file_id=${props.row.fileId}&type=img`"
+      :src="`${baseURL}/stream/download_file?file_id=${props.row.fileId}&type=img`"
   />
 </template>
 

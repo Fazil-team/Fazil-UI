@@ -8,6 +8,7 @@ import SparkMD5 from 'spark-md5'
 import * as msg from '@/assets/utils/message'
 import * as layout_api from '~/layouts/apis'
 
+const props = defineProps(['filePid'])
 const emits = defineEmits(['upload_success'])
 const bmf = new BMF();
 const percent = ref({})
@@ -144,7 +145,8 @@ const upload_chunk = (file, index, id, upload_options) => {
   data.append("chunk_index", index)
   data.append("file_id", id)
   data.append("file_size", file_size)
-  data.append("file_pid", '0')
+  data.append("file_pid", props.filePid)
+  data.append("filePath", props.filePid)
   service.post(`/stream?chunkNum=${chunk_num}&chunkIndex=${index}`, data).then(res => {
     if (chunk_num == index + 1) {
       upload_options.onFinish()
