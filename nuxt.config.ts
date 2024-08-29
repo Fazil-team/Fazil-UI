@@ -4,7 +4,7 @@ import {NaiveUiResolver} from 'unplugin-vue-components/resolvers';
 // https://v3.nuxtjs.org/docs/directory-structure/nuxt.config
 export default defineNuxtConfig({
     app: {
-        pageTransition: {name: 'page', mode: 'out-in'},
+        // pageTransition: {name: 'page', mode: 'out-in'},
         head: {
             title: '致飞网盘-Admin 1.0 '
         }
@@ -31,5 +31,10 @@ export default defineNuxtConfig({
     piniaPersistedstate: {
         storage: 'sessionStorage',
     },
+    plugins: [
+        {
+            src: '~/plugins/PDF.ts', ssr: false
+        }
+    ],
     compatibilityDate: '2024-07-16',
 })

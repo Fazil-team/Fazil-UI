@@ -9,7 +9,7 @@ definePageMeta({
   name: `我的文件 `,
   parent: null
 });
-import Index from "~/pages/user/files/index.vue";
+import Index from "~/pages/user/files/FileViewer.vue";
 import {definePageMeta} from "#imports";
 </script>
 

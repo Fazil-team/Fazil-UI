@@ -86,7 +86,7 @@ const pagination = reactive({
 
 const init = () => {
   loading.value = true
-  height.value = `calc(100vh - ${document.querySelector(".n-card").clientHeight}px - 2rem - 6rem - 10rem - 2.3rem)`;
+  height.value = `calc(100vh - ${document.querySelector(".n-card").clientHeight}px - 2rem - 3rem - 10rem - 2.3rem)`;
   apis.load_files({
     current_page: pagination.page,
     page_size: pagination.pageSize,
@@ -186,15 +186,17 @@ onMounted(() => {
 })
 
 const path = () => {
+  let paths = []
   let path = '/';
   if (id) {
     for (let i = 0; i < id.length; i++) {
       path += `${id[i]}/`
+      paths.push(id[i])
     }
   }
   filePath.value = path;
 
-  return path
+  return {path, paths}
 }
 
 const previous = ()=>{
@@ -220,7 +222,7 @@ const previous = ()=>{
         查询结果
       </template>
       <div style="height: 1.3rem;margin-bottom: 1rem;">
-       路径 {{ path() }}
+       <n-tag type="primary">根目录</n-tag> <span v-for="(item, index) in path().paths"> / <n-tag v-if="index == path().paths.length-1" type="success">{{ item }}</n-tag> <n-tag v-else type="primary">{{ item }}</n-tag></span>
       </div>
       <n-data-table
           :style="{ height: `${height}` }"
