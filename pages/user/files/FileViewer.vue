@@ -8,6 +8,8 @@ import {size2Str} from "assets/utils/commons";
 import FileIcon from './components/FileIcon.vue'
 import Upload_file_dialog from "~/pages/user/files/dialogs/upload_file_dialog.vue";
 import Create_folder_dialog from "~/pages/user/files/dialogs/create_folder_dialog.vue";
+import DocxViewer from "~/pages/user/files/components/DocxViewer.vue";
+import PDFViewer from "~/pages/user/files/components/PDFViewer.vue";
 
 let id = useRouter().currentRoute.value.params.id;
 const upload_file_dialog = ref()
@@ -17,6 +19,8 @@ const x = ref(0)
 const y = ref(0)
 const showDropdown = ref()
 const createFolderRef = ref()
+const doc_viewer_ref = ref()
+const pdf_viewer_ref = ref()
 const columns = [
   {
     title: '',
@@ -30,7 +34,28 @@ const columns = [
   {
     title: '文件名称',
     key: 'fileName',
-    minWidth: '200px'
+    minWidth: '200px',
+    render(row) {
+      return h('span', {
+        class: 'file_name',
+        onClick: ()=>{
+          file_name_click(row)
+        }
+      }, row.fileName)
+    }
+  },
+  {
+    title: '文件名称',
+    key: 'fileName',
+    width: '200',
+    render(row) {
+      return h('span', {
+        class: 'active',
+        onClick: ()=>{
+          file_name_click(row)
+        }
+      }, row.fileName)
+    }
   },
   {
     title: '文件大小',
@@ -149,6 +174,20 @@ interface Song {
   length: string
 }
 
+const file_name_click = (row)=>{
+  console.log(row)
+  switch (row.fileType){
+    case 'doc':
+      doc_viewer_ref.value.viewer.show(row.fileId)
+      break
+    case 'pdf':
+      apis.get_key(row.fileId).then(res=>{
+        pdf_viewer_ref.value.viewer.show(res.data.data)
+      })
+      break
+  }
+}
+
 const rowProps = (row) => {
   return {
     onContextmenu: (e) => {
@@ -163,19 +202,19 @@ const rowProps = (row) => {
       });
     },
     onClick: () => {
-      if (row.fileType == 'folder') {
-        let path = ''
-        if (useRouter().currentRoute.value.path == '/user/files/') {
-          path = `/user/files/${row.fileName}`
-        } else {
-          path = `${useRouter().currentRoute.value.path}/${row.fileName}`
-        }
-        console.log(path)
-        navigateTo({
-          path: path
-        })
-      } else {
-        console.log("文件")
+      switch (row.fileType){
+        case 'folder':
+          let path = ''
+          if (useRouter().currentRoute.value.path == '/user/files/') {
+            path = `/user/files/${row.fileName}`
+          } else {
+            path = `${useRouter().currentRoute.value.path}/${row.fileName}`
+          }
+          console.log(path)
+          navigateTo({
+            path: path
+          })
+          break
       }
     }
   };
@@ -253,6 +292,8 @@ const previous = ()=>{
     </n-card>
     <upload_file_dialog :filePid="filePath" @upload_success="init()" ref="upload_file_dialog"/>
     <create_folder_dialog @success="init()" ref="createFolderRef"/>
+    <DocxViewer ref="doc_viewer_ref" />
+    <PDFViewer ref="pdf_viewer_ref" />
   </div>
 </template>
 
@@ -260,6 +301,21 @@ const previous = ()=>{
 :deep(.n-scrollbar-container){
   .n-data-table-tr{
     cursor: pointer;
+  }
+}
+:deep(.file_name){
+  transition: all .2s;
+  &:hover{
+    color: #3471df;
+  }
+}
+
+:deep(.n-data-table-tr){
+  .active{
+    color: rgba(0 0 0 / 0);
+  }
+  &:hover .active{
+    color: white;
   }
 }
 </style>

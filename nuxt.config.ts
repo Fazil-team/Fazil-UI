@@ -26,15 +26,13 @@ export default defineNuxtConfig({
     },
     modules: [
         '@pinia/nuxt',
-        '@pinia-plugin-persistedstate/nuxt',
+        '@pinia-plugin-persistedstate/nuxt'
     ],
     piniaPersistedstate: {
         storage: 'sessionStorage',
     },
     plugins: [
-        {
-            src: '~/plugins/PDF.ts', ssr: false
-        }
+
     ],
     compatibilityDate: '2024-07-16',
 })

@@ -114,6 +114,10 @@ const customRequest = ({
 const upload_chunk = (file, index, id, upload_options) => {
   const file_name = file.name;
   const file_size = file.size;
+  if(file_size == 0){
+    window.$message.warning("文件大小不能为空")
+    return;
+  }
   const chunk_size = 1024 * 1024 * 5
   let chunk_num = Math.ceil(file_size / chunk_size)
   let start_dit = index * chunk_size;

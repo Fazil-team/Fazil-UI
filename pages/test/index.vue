@@ -1,12 +1,8 @@
-<script setup lang="ts">
-import {ref, reactive, onMounted} from "vue";
-
-</script>
-
 <template>
 
 </template>
-
-<style scoped>
-
+<script setup lang="ts">
+</script>
+<style lang="scss" scoped>
+//
 </style>

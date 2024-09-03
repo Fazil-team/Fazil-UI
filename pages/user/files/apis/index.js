@@ -95,10 +95,28 @@ export const remove_file = (file_id) => {
     })
 }
 
-export const new_folder = (data)=>{
-    return new Promise(r=>{
-        service.post("/stream/folder", data).then(res=>{
+export const new_folder = (data) => {
+    return new Promise(r => {
+        service.post("/stream/folder", data).then(res => {
             r(res)
         })
     })
+}
+
+export const review_file = (id) => {
+    return new Promise(r => {
+        service.get(`/stream/download_file?file_id=${id}`, {
+            responseType: 'blob'
+        }).then(res => {
+            r(res)
+        })
+    })
+}
+
+export const get_key = (id) => {
+    return new Promise(r => [
+        service.get(`/stream/gen_key?file_id=${id}`).then(res => {
+            r(res)
+        })
+    ])
 }

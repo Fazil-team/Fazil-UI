@@ -327,7 +327,7 @@ const cancel_download = (id) => {
 
 
                 </div>
-                <swBtn @change="changeTheme"></swBtn>
+<!--                <swBtn @change="changeTheme"></swBtn>-->
               </div>
             </div>
           </n-layout-header>
