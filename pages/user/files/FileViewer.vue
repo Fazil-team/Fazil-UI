@@ -10,6 +10,7 @@ import Upload_file_dialog from "~/pages/user/files/dialogs/upload_file_dialog.vu
 import Create_folder_dialog from "~/pages/user/files/dialogs/create_folder_dialog.vue";
 import DocxViewer from "~/pages/user/files/components/DocxViewer.vue";
 import PDFViewer from "~/pages/user/files/components/PDFViewer.vue";
+import ActiveBar from "~/pages/user/files/components/ActiveBar.vue";
 
 let id = useRouter().currentRoute.value.params.id;
 const upload_file_dialog = ref()
@@ -45,16 +46,13 @@ const columns = [
     }
   },
   {
-    title: '文件名称',
+    title: '',
     key: 'fileName',
     width: '200',
     render(row) {
-      return h('span', {
-        class: 'active',
-        onClick: ()=>{
-          file_name_click(row)
-        }
-      }, row.fileName)
+      return h(ActiveBar, {
+        fileId: row.fileId
+      }, null)
     }
   },
   {
@@ -69,19 +67,19 @@ const columns = [
     key: 'createTime',
     width: '180'
   },
-  {
-    title: '操作',
-    width: '100',
-    render(row) {
-      return h('div', null, [
-        h(NButton, {
-          onClick: () => {
-            apis.add_download_task(row)
-          }
-        }, '下载')
-      ])
-    }
-  }
+  // {
+  //   title: '操作',
+  //   width: '100',
+  //   render(row) {
+  //     return h('div', null, [
+  //       h(NButton, {
+  //         onClick: () => {
+  //           apis.add_download_task(row)
+  //         }
+  //       }, '下载')
+  //     ])
+  //   }
+  // }
 ]
 const tb_data = ref([{}])
 const checkedRowKeys = ref([])
@@ -311,10 +309,11 @@ const previous = ()=>{
 }
 
 :deep(.n-data-table-tr){
-  .active{
+  .active-item{
     color: rgba(0 0 0 / 0);
+    transition: all .2s;
   }
-  &:hover .active{
+  &:hover .active-item{
     color: white;
   }
 }
