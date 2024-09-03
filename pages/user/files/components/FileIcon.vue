@@ -8,6 +8,7 @@ import Executor from "assets/icon/colorful/Executor.vue";
 import Folder from "assets/icon/colorful/Folder.vue";
 import Image from "assets/icon/colorful/Imgae.vue"
 import {baseURL} from "assets/config/network.js";
+import PDF from "assets/icon/colorful/PDF.vue";
 
 const props = defineProps(['row'])
 </script>
@@ -19,6 +20,7 @@ const props = defineProps(['row'])
   <Zip class="colorful-icon" v-if="props.row.fileType=='zip'"/>
   <Executor class="colorful-icon" v-if="props.row.fileType=='exe'"/>
   <Folder class="colorful-icon" v-if="props.row.fileType=='folder'"/>
+  <PDF class="colorful-icon" v-if="props.row.fileType=='pdf'"/>
   <n-image
       style="zoom: .3;"
       v-if="props.row.fileType == 'img'"
