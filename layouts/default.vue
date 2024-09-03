@@ -296,7 +296,7 @@ const cancel_download = (id) => {
                     <template #header>
                       <div
                           style="display: flex;justify-content: center;align-items: center;font-size: 1.2rem;font-weight: 800;">
-                        下载任务 {{ storage }}
+                        下载任务
                       </div>
                     </template>
                     <!--                    {{download_tasks}}-->
@@ -313,7 +313,7 @@ const cancel_download = (id) => {
                           <div @click="cancel_download(item.file_id)" class="close-btn"><i
                               class="iconfont icon-close"></i></div>
                         </div>
-                        <n-progress :show-indicator="false" type="line" :percentage="item.percent"
+                        <n-progress status="success" :show-indicator="false" type="line" :percentage="item.percent"
                                     :processing="item.percent != 100"/>
                         <div style="display: flex;justify-content: space-between">
                           <div>{{ size2Str(item.speed) }}/s</div>
