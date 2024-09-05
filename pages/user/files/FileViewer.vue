@@ -51,7 +51,21 @@ const columns = [
     width: '200',
     render(row) {
       return h(ActiveBar, {
-        fileId: row.fileId
+        fileId: row.fileId,
+        onDownload: ()=>{
+          apis.add_download_task(row)
+        },
+        onDelete: ()=>{
+          apis.remove_file(row.fileId).then(res => {
+            init()
+          })
+        },
+        onShare: ()=>{
+
+        },
+        onPreview: ()=>{
+          file_name_click(row)
+        }
       }, null)
     }
   },
@@ -312,9 +326,13 @@ const previous = ()=>{
   .active-item{
     color: rgba(0 0 0 / 0);
     transition: all .2s;
+
   }
   &:hover .active-item{
     color: white;
+    &:hover{
+      color: #00dc82;
+    }
   }
 }
 </style>

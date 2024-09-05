@@ -88,9 +88,11 @@ export const add_download_task = (row) => {
 
 export const remove_file = (file_id) => {
     return new Promise(r => {
-        service.delete(`/stream?file_id=${file_id}`).then(res => {
-            layout_api.get_user_storage()
-            r(res)
+        msg.warn_dialog('警告', '确定要删除吗').then(() => {
+            service.delete(`/stream?file_id=${file_id}`).then(res => {
+                layout_api.get_user_storage()
+                r(res)
+            })
         })
     })
 }

@@ -324,10 +324,10 @@ const cancel_download = (id) => {
                     <template #footer>
                     </template>
                   </n-popover>
-
-
                 </div>
-<!--                <swBtn @change="changeTheme"></swBtn>-->
+                <div style="display: flex;align-items: center">
+                  <swBtn @change="changeTheme"></swBtn>
+                </div>
               </div>
             </div>
           </n-layout-header>

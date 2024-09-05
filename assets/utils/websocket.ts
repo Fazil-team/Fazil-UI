@@ -27,7 +27,7 @@ const create_new_connect = (url) => {
     instance = new WebSocket(url);
 
     instance.onopen = function () {
-        msg.success_notify('系统信息', 'websocket连接成功！')
+        msg.success('实时通信连接成功！欢迎您！')
     }
 
     instance.onmessage = (e) => {

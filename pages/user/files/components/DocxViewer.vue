@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import {ref, reactive, onMounted} from "vue";
-import axios from 'axios'
 import { renderAsync } from "docx-preview";
-let docx = import.meta.glob("docx-preview");
+let docx = import.meta.glob("/docx-preview");
 import {review_file} from '../apis'
 
 const previewfile = (id: string) => {
