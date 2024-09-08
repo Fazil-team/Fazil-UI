@@ -11,6 +11,7 @@ import Create_folder_dialog from "~/pages/user/files/dialogs/create_folder_dialo
 import DocxViewer from "~/pages/user/files/components/DocxViewer.vue";
 import PDFViewer from "~/pages/user/files/components/PDFViewer.vue";
 import ActiveBar from "~/pages/user/files/components/ActiveBar.vue";
+import XLSXViewer from "~/pages/user/files/components/XLSXViewer.vue";
 
 let id = useRouter().currentRoute.value.params.id;
 const upload_file_dialog = ref()
@@ -22,6 +23,7 @@ const showDropdown = ref()
 const createFolderRef = ref()
 const doc_viewer_ref = ref()
 const pdf_viewer_ref = ref()
+const xlsx_viewer_ref = ref()
 const columns = [
   {
     title: '',
@@ -187,7 +189,6 @@ interface Song {
 }
 
 const file_name_click = (row)=>{
-  console.log(row)
   switch (row.fileType){
     case 'doc':
       doc_viewer_ref.value.viewer.show(row.fileId)
@@ -195,6 +196,12 @@ const file_name_click = (row)=>{
     case 'pdf':
       apis.get_key(row.fileId).then(res=>{
         pdf_viewer_ref.value.viewer.show(res.data.data)
+      })
+      break
+    case 'excel':
+      apis.get_key(row.fileId).then(res=>{
+        console.log(xlsx_viewer_ref.value)
+        xlsx_viewer_ref.value.viewer.show(res.data.data)
       })
       break
   }
@@ -306,6 +313,7 @@ const previous = ()=>{
     <create_folder_dialog @success="init()" ref="createFolderRef"/>
     <DocxViewer ref="doc_viewer_ref" />
     <PDFViewer ref="pdf_viewer_ref" />
+    <XLSXViewer ref="xlsx_viewer_ref" />
   </div>
 </template>
 
@@ -329,7 +337,7 @@ const previous = ()=>{
 
   }
   &:hover .active-item{
-    color: white;
+    color: var(--n-td-text-color);
     &:hover{
       color: #00dc82;
     }

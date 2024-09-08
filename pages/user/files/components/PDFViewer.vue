@@ -18,10 +18,27 @@ defineExpose({
 
 <template>
   <n-modal v-model:show="viewer.open">
-    <div style="height: 800px;width: 1000px">
-      <iframe style="width: 100%;height: 100%;overflow: hidden"
-              :src="viewer.url"></iframe>
-    </div>
+    <n-card
+        style="width: 800px"
+        title="PDF预览"
+        :bordered="true"
+        role="dialog"
+        aria-modal="true"
+    >
+      <template #header>
+        创建文件夹
+      </template>
+      <div style="height: 500px;">
+        <iframe style="width: 100%;height: 100%;overflow: hidden;"
+                :src="viewer.url"></iframe>
+      </div>
+      <template #footer>
+        <div style="display: flex;justify-content: right">
+          <n-button type="primary" @click="viewer.open = false">确定</n-button>
+        </div>
+      </template>
+    </n-card>
+
   </n-modal>
 
 </template>

@@ -38,7 +38,7 @@ const emits = defineEmits(['download', 'delete', 'share', 'preview'])
 <style scoped lang="scss">
 .active-item{
   margin-right: 1rem;
-
+  color: var(--n-td-text-color);
 }
 
 

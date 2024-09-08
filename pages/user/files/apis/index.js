@@ -5,6 +5,7 @@ import * as msg from '@/assets/utils/message'
 import {storeToRefs} from "pinia";
 import {CancelToken} from "axios";
 import * as layout_api from "~/layouts/apis/index";
+import {baseURL} from '@/assets/config/network.js'
 
 export const load_files = (data) => {
     return new Promise(r => {
@@ -122,3 +123,5 @@ export const get_key = (id) => {
         })
     ])
 }
+
+

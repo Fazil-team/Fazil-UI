@@ -38,10 +38,27 @@ defineExpose({
 
 <template>
   <n-modal v-model:show="viewer.open">
-    <div
-        ref="docxDiv"
-        class="docxDiv"
-    ></div>
+    <n-card
+        style="width: 800px;"
+        title="Word预览"
+        :bordered="true"
+        role="dialog"
+        aria-modal="true"
+    >
+      <template #header>
+        创建文件夹
+      </template>
+      <div
+          ref="docxDiv"
+          class="docxDiv"
+      ></div>
+      <template #footer>
+        <div style="display: flex;justify-content: right">
+          <n-button type="primary" @click="viewer.open = false">确定</n-button>
+        </div>
+      </template>
+    </n-card>
+
   </n-modal>
 
 </template>
