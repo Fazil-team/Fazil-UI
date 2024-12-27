@@ -28,8 +28,9 @@ import * as auth_api from '~/layouts/apis'
 import {CloseOutlined} from '@vicons/antd'
 import {creatWebSocket} from '@/assets/utils/websocket'
 import {size2Str} from "../assets/utils/commons.js";
-import {get_user_storage} from "~/layouts/apis";
-import {wsURL} from "assets/config/network.js";
+import {get_user_storage, getVer} from "~/layouts/apis";
+import {wsURL, baseURL} from "assets/config/network.js";
+
 
 const links = ref([])
 const user = storeToRefs(useUserStore()).user_info
@@ -40,7 +41,14 @@ const router = useRouter();
 const percent = ref(0)
 const path = ref()
 const loadingBar = useLoadingBar();
+const settings_open = ref(false)
+
 const options = [
+  {
+    label: '个人设置',
+    key: 'setting',
+    disabled: false
+  },
   {
     label: '退出登陆',
     key: 'logout',
@@ -81,6 +89,10 @@ watch(() => router.currentRoute.value, () => {
   }, 100)
 })
 
+const getToken = ()=>{
+  return localStorage.getItem('Authorization')
+}
+
 const set_item = () => {
   if (router.currentRoute.value.fullPath == '/') {
     return;
@@ -112,6 +124,9 @@ const handleSelect = (key) => {
     case 'logout':
       auth_api.logout()
       break
+    case 'setting':
+      settings_open.value = true
+      break
   }
 }
 
@@ -123,6 +138,8 @@ watch(() => storage.value, () => {
   percent.value = ((storage.value?.used_storage / storage.value?.total_storage) * 100).toFixed(2);
 })
 
+const version = ref('')
+
 const init = async () => {
   loading.value = true
   get_user_storage().then(res => {
@@ -132,11 +149,12 @@ const init = async () => {
     loadingBar.start()
     path.value = router.currentRoute.value.fullPath
   }
-  if (user.value == undefined) {
+  if (user.value == undefined && router.currentRoute.value.path !== '/share') {
     auth_api.logout()
     return
   }
   let genRouterPaths = await gen_router_paths(user.value.menus);
+  console.log(genRouterPaths)
   genRouterPaths.unshift(header)
   menuOptions.value = genRouterPaths
   loading.value = false
@@ -150,6 +168,9 @@ const init = async () => {
   if (process.client) {
     loadingBar.finish()
   }
+  getVer().then(res => {
+    version.value = res.data.data
+  })
 }
 
 const init_ws = async () => {
@@ -209,6 +230,18 @@ const cancel_download = (id) => {
   }
 }
 
+const upload_avatar = (options)=>{
+
+}
+
+watch(()=>path.value, (value, oldValue, onCleanup)=>{
+  console.log(value.startsWith("/user/files"))
+  if(value.startsWith("/user/files")){
+    path.value = "/user/files";
+  }
+  console.log('path',path.value)
+})
+
 </script>
 
 <template>
@@ -237,6 +270,7 @@ const cancel_download = (id) => {
                 :collapsed-icon-size="22"
                 :options="menuOptions"
                 @click="change"
+                key-field="key"
             />
             <div
                 :style="{'position': 'relative', 'z-index': '999', 'height': collapsed?'5rem':'6rem'}" class="admin">
@@ -244,10 +278,11 @@ const cancel_download = (id) => {
                    style="display: flex;justify-content: left;align-items: center;width: 100%;flex-wrap: wrap">
                 <div style="margin: 0 1rem">
                   <n-dropdown trigger="hover" :options="options" @select="handleSelect">
-                    <n-avatar src="https://q1.qlogo.cn/g?b=qq&nk=2437916756&s=640"></n-avatar>
+                    <n-avatar :src="baseURL+`/common/resource/avatar?user_id=${user?.id}`"></n-avatar>
                   </n-dropdown>
                 </div>
                 <div>
+
                   {{ user?.username }}
                 </div>
                 <div style="width: 100%;padding: 0 1rem;display: flex;justify-content: start">
@@ -269,7 +304,7 @@ const cancel_download = (id) => {
                 </div>
               </div>
               <div v-else style="margin-left: 1rem" class="small">
-                <n-avatar src="https://q1.qlogo.cn/g?b=qq&nk=2437916756&s=640"></n-avatar>
+                <n-avatar :src="baseURL+`/common/resource/avatar?user_id=${user?.id}`"></n-avatar>
                 <n-progress
                     style="width: 30px;height: 30px;font-size: .2rem"
                     type="circle"
@@ -331,26 +366,51 @@ const cancel_download = (id) => {
               </div>
             </div>
           </n-layout-header>
-<!--          <n-layout-header bordered style="height: 3rem;display: flex;align-items: center;padding: 0 1rem">-->
-<!--            <n-space id="space" style="flex-flow: nowrap;overflow: auto">-->
-<!--              <n-tag :disabled="item.checked" @click="navigateTo(item.path)" checkable closable round @checkedChange="val=>{-->
-<!--               return false-->
-<!--              }" v-for="item in links" v-model:checked="item.checked" type="info"-->
-<!--                     style="cursor: pointer;">-->
-<!--                {{ item.title }}-->
-<!--                <CloseOutlined style="width: 10px"></CloseOutlined>-->
-<!--              </n-tag>-->
-<!--            </n-space>-->
-<!--          </n-layout-header>-->
+          <!--          <n-layout-header bordered style="height: 3rem;display: flex;align-items: center;padding: 0 1rem">-->
+          <!--            <n-space id="space" style="flex-flow: nowrap;overflow: auto">-->
+          <!--              <n-tag :disabled="item.checked" @click="navigateTo(item.path)" checkable closable round @checkedChange="val=>{-->
+          <!--               return false-->
+          <!--              }" v-for="item in links" v-model:checked="item.checked" type="info"-->
+          <!--                     style="cursor: pointer;">-->
+          <!--                {{ item.title }}-->
+          <!--                <CloseOutlined style="width: 10px"></CloseOutlined>-->
+          <!--              </n-tag>-->
+          <!--            </n-space>-->
+          <!--          </n-layout-header>-->
           <n-layout-content bordered
                             style="height: calc(100vh - 6rem);display: flex;align-items: center;padding: 1rem 1rem;width: 100%;">
             <NuxtPage/>
           </n-layout-content>
           <n-layout-footer bordered style="height: 3rem;display: flex;align-items: center;padding: 0 0 0 1rem">Powered
-            By Virus_Cui
+            By Virus_Cui <span style="margin-left: 1rem;font-weight: 800;">V {{ version }}</span>
           </n-layout-footer>
         </n-layout>
       </n-layout>
+
+      <n-drawer v-model:show="settings_open" :width="502" placement="right">
+        <n-drawer-content title="个人设置">
+          <n-form-item label="头像">
+            <n-upload
+                :headers="{
+                  'Authorization': getToken()
+                }"
+                :action="baseURL+'/user/change_user_avatar'"
+                list-type="image-card"
+                :default-file-list="user?.avatar != null ? [
+                    {
+                      id: 'c',
+          name: '我是自带url的图片.png',
+          status: 'finished',
+          url: baseURL+`/common/resource/avatar?user_id=${user?.id}`
+                    }
+                ]: []"
+                max="1"
+            >
+              点击上传
+            </n-upload>
+          </n-form-item>
+        </n-drawer-content>
+      </n-drawer>
     </n-config-provider>
   </ClientOnly>
 </template>

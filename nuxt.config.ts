@@ -3,8 +3,14 @@ import Components from 'unplugin-vue-components/vite';
 import {NaiveUiResolver} from 'unplugin-vue-components/resolvers';
 // https://v3.nuxtjs.org/docs/directory-structure/nuxt.config
 export default defineNuxtConfig({
+    ssr: false,
+    router: {
+        options: {
+            hashMode: true
+        }
+    },
     app: {
-        // pageTransition: {name: 'page', mode: 'out-in'},
+        pageTransition: {name: 'page', mode: 'out-in'},
         head: {
             title: '致飞网盘-Admin 1.0 '
         }
@@ -26,13 +32,14 @@ export default defineNuxtConfig({
     },
     modules: [
         '@pinia/nuxt',
-        '@pinia-plugin-persistedstate/nuxt'
+        '@pinia-plugin-persistedstate/nuxt',
+        'arco-design-nuxt-module'
     ],
     piniaPersistedstate: {
         storage: 'sessionStorage',
     },
     plugins: [
-
+        {src: '~/plugins/cropper', ssr: false}
     ],
     compatibilityDate: '2024-07-16',
 })

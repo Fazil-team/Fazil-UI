@@ -4,6 +4,7 @@ import {useLayoutStore} from "~/store/UseLayoutStore";
 import {storeToRefs} from "pinia";
 import {navigateTo} from "#app/composables/router";
 import {baseURL} from "assets/config/network.js";
+import {useRouter} from "#app";
 
 export const service = request.create({
     baseURL: baseURL
@@ -21,8 +22,14 @@ service.interceptors.response.use(
             return res
         }
         if (res.data?.code === 2) {
-            msg.err(res.data.msg)
-            storeToRefs(useLayoutStore()).layout.value = 'login'
+            const router = useRouter();
+            console.log(router.currentRoute.value.path == '/share')
+            if(router.currentRoute.value.path == '/share'){
+                return res;
+            }else{
+                storeToRefs(useLayoutStore()).layout.value = 'login'
+                msg.err(res.data.msg)
+            }
         } else if (res.data?.code === 3) {
             msg.warn('权限不足')
             navigateTo('/')

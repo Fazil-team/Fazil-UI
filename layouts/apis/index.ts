@@ -31,11 +31,19 @@ export const login = (data: any) => {
 }
 
 export const get_user_storage = () => {
-    return new Promise(r=>{
+    return new Promise(r => {
         service.get("/user/storage").then(res => {
             const user = storeToRefs(useStorageStore()).data
             user.value = res.data.data
             r(null)
+        })
+    })
+}
+
+export const getVer = () => {
+    return new Promise(r => {
+        service.get("/setting/version").then(res => {
+            r(res)
         })
     })
 }

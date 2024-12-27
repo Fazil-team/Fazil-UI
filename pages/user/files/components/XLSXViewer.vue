@@ -3,11 +3,11 @@ import {onMounted, reactive} from "vue";
 import {baseURL} from "assets/config/network.js";
 
 const excel = ref()
-let XLSX = ref(null);
+// let XLSX = ref(null);
 
 
 const load_modules = async () => {
-  XLSX.value = await import('xlsx')
+  // XLSX.value = await import('xlsx')
 }
 
 

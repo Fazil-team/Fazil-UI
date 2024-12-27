@@ -124,4 +124,34 @@ export const get_key = (id) => {
     ])
 }
 
+export const share = (data) => {
+    return new Promise(r => {
+        service.post(`/stream/share`, data).then(res => {
+            r(res)
+        })
+    })
+}
 
+export const check_share_code = (share_code, share_id) => {
+    return new Promise(r => {
+        service.get(`/stream/check_share_code?share_code=${share_code}&share_id=${share_id}`).then(res => {
+            r(res)
+        })
+    })
+}
+
+export const get_share_user_info = (share_id) => {
+    return new Promise(r => {
+        service.get(`/stream/get_share_user_info?share_id=${share_id}`).then(res => {
+            r(res)
+        })
+    })
+}
+
+export const delete_share = (share_id) => {
+    return new Promise(r => {
+        service.delete(`/stream/shares/${share_id}`).then(res => {
+            r(res)
+        })
+    })
+}

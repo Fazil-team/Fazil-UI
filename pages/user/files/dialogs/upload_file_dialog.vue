@@ -3,12 +3,12 @@ import {ref, reactive, onMounted} from "vue";
 import Folder from "assets/icon/colorful/Folder.vue";
 import type {UploadCustomRequestOptions} from "naive-ui";
 import {service} from "assets/utils/request";
-import BMF from 'browser-md5-file';
 import SparkMD5 from 'spark-md5'
 import * as msg from '@/assets/utils/message'
 import * as layout_api from '~/layouts/apis'
+import BMF from "browser-md5-file/dist/index.esm";
 
-const props = defineProps(['filePid'])
+const props = defineProps(['filePid', 'path'])
 const emits = defineEmits(['upload_success'])
 const bmf = new BMF();
 const percent = ref({})
@@ -150,7 +150,7 @@ const upload_chunk = (file, index, id, upload_options) => {
   data.append("file_id", id)
   data.append("file_size", file_size)
   data.append("file_pid", props.filePid)
-  data.append("filePath", props.filePid)
+  data.append("filePath", props.path)
   service.post(`/stream?chunkNum=${chunk_num}&chunkIndex=${index}`, data).then(res => {
     if (chunk_num == index + 1) {
       upload_options.onFinish()

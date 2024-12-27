@@ -14,7 +14,9 @@ import {definePageMeta} from "#imports";
 </script>
 
 <template>
-  <index/>
+  <div>
+    <index/>
+  </div>
 </template>
 
 <style scoped>

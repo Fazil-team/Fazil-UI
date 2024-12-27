@@ -12,6 +12,8 @@ import DocxViewer from "~/pages/user/files/components/DocxViewer.vue";
 import PDFViewer from "~/pages/user/files/components/PDFViewer.vue";
 import ActiveBar from "~/pages/user/files/components/ActiveBar.vue";
 import XLSXViewer from "~/pages/user/files/components/XLSXViewer.vue";
+import * as msg from '~/assets/utils/message'
+import Share_file_dialog from "~/pages/user/files/dialogs/share_file_dialog.vue";
 
 let id = useRouter().currentRoute.value.params.id;
 const upload_file_dialog = ref()
@@ -24,6 +26,7 @@ const createFolderRef = ref()
 const doc_viewer_ref = ref()
 const pdf_viewer_ref = ref()
 const xlsx_viewer_ref = ref()
+const share_file_dialog = ref()
 const columns = [
   {
     title: '',
@@ -49,9 +52,9 @@ const columns = [
   },
   {
     title: '',
-    key: 'fileName',
+    key: 'action',
     width: '200',
-    render(row) {
+    render(row: any) {
       return h(ActiveBar, {
         fileId: row.fileId,
         onDownload: ()=>{
@@ -63,7 +66,8 @@ const columns = [
           })
         },
         onShare: ()=>{
-
+          current_row.value = row
+          handleSelect("share")
         },
         onPreview: ()=>{
           file_name_click(row)
@@ -125,7 +129,7 @@ const pagination = reactive({
 
 const init = () => {
   loading.value = true
-  height.value = `calc(100vh - ${document.querySelector(".n-card").clientHeight}px - 2rem - 3rem - 10rem - 2.3rem)`;
+  height.value = `calc(100vh - ${document.querySelector(".n-card").clientHeight}px - 2rem - 3rem - 10rem - 1.3rem)`;
   apis.load_files({
     current_page: pagination.page,
     page_size: pagination.pageSize,
@@ -154,6 +158,10 @@ const current_row = ref()
 
 const options: DropdownOption[] = [
   {
+    label: '分享',
+    key: 'share'
+  },
+  {
     label: '添加下载任务',
     key: 'download'
   },
@@ -177,6 +185,9 @@ const handleSelect = (str) => {
       apis.remove_file(current.fileId).then(res => {
         init()
       })
+      break
+    case 'share':
+      share_file_dialog.value.dialog.show(current)
       break
   }
   showDropdown.value = false
@@ -259,6 +270,10 @@ const path = () => {
 
 const previous = ()=>{
   let path = useRouter().currentRoute.value.path
+  if(path == '/user/files'){
+    msg.warn("已经在根目录啦~")
+    return;
+  }
   var number = path.lastIndexOf("/");
   let path1 = path.substring(0, number)
   console.log(path1)
@@ -277,11 +292,12 @@ const previous = ()=>{
     </n-card>
     <n-card style="margin-top: 1rem;">
       <template #header>
-        查询结果
+        我的文件
+        <div style="height: 1.3rem">
+          <n-tag type="primary">根目录</n-tag> <span v-for="(item, index) in path().paths"> > <n-tag v-if="index == path().paths.length-1" type="success">{{ item }}</n-tag> <n-tag v-else type="primary">{{ item }}</n-tag></span>
+        </div>
       </template>
-      <div style="height: 1.3rem;margin-bottom: 1rem;">
-       <n-tag type="primary">根目录</n-tag> <span v-for="(item, index) in path().paths"> / <n-tag v-if="index == path().paths.length-1" type="success">{{ item }}</n-tag> <n-tag v-else type="primary">{{ item }}</n-tag></span>
-      </div>
+
       <n-data-table
           :style="{ height: `${height}` }"
           flex-height
@@ -309,11 +325,12 @@ const previous = ()=>{
           @select="handleSelect"
       />
     </n-card>
-    <upload_file_dialog :filePid="filePath" @upload_success="init()" ref="upload_file_dialog"/>
+    <upload_file_dialog :filePid="filePid" @upload_success="init()" :path="filePath" ref="upload_file_dialog"/>
     <create_folder_dialog @success="init()" ref="createFolderRef"/>
     <DocxViewer ref="doc_viewer_ref" />
     <PDFViewer ref="pdf_viewer_ref" />
     <XLSXViewer ref="xlsx_viewer_ref" />
+    <share_file_dialog ref="share_file_dialog"/>
   </div>
 </template>
 

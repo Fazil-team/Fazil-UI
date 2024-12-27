@@ -17,16 +17,11 @@ const emits = defineEmits(['download', 'delete', 'share', 'preview'])
   }">
     <DeleteOutlined></DeleteOutlined>
   </n-icon>
-  <n-popover trigger="hover">
-    <template #trigger>
-      <n-icon size="20" class="active-item" @click="()=>{
+  <n-icon size="20" class="active-item" @click="()=>{
     emits('share')
   }">
-        <ShareAltOutlined></ShareAltOutlined>
-      </n-icon>
-    </template>
-    <span>还没做2333</span>
-  </n-popover>
+    <ShareAltOutlined></ShareAltOutlined>
+  </n-icon>
 
   <n-icon size="20" class="active-item" @click="()=>{
     emits('preview')

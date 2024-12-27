@@ -22,6 +22,7 @@ const dialog = reactive({
   rules: {},
   submit: () => {
     apis.new_folder(dialog.data).then(res => {
+      dialog.close()
       emits('success')
     })
   }
@@ -48,7 +49,7 @@ defineExpose({
       <n-input v-model:value="dialog.data.folderName"></n-input>
       <template #footer>
         <div style="display: flex;justify-content: right">
-          <n-button @click="dialog.close()">取消</n-button>
+          <n-button style="margin-right: 1rem" @click="dialog.close()">取消</n-button>
           <n-button type="primary" @click="dialog.submit()">确定</n-button>
         </div>
       </template>

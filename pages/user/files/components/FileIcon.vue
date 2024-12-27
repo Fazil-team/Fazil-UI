@@ -7,6 +7,7 @@ import Zip from "assets/icon/colorful/Zip.vue";
 import Executor from "assets/icon/colorful/Executor.vue";
 import Folder from "assets/icon/colorful/Folder.vue";
 import Image from "assets/icon/colorful/Imgae.vue"
+import Video from "assets/icon/colorful/Video.vue"
 import {baseURL} from "assets/config/network.js";
 import PDF from "assets/icon/colorful/PDF.vue";
 import Txt from "assets/icon/colorful/Txt.vue";
@@ -23,6 +24,7 @@ const props = defineProps(['row'])
   <Folder class="colorful-icon" v-if="props.row.fileType=='folder'"/>
   <PDF class="colorful-icon" v-if="props.row.fileType=='pdf'"/>
   <Txt class="colorful-icon" v-if="props.row.fileType=='txt'"/>
+  <Video class="colorful-icon" v-if="props.row.fileType=='media'"/>
   <n-image
       style="zoom: .3;"
       v-if="props.row.fileType == 'img'"

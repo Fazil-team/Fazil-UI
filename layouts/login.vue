@@ -6,6 +6,7 @@ import {storeToRefs} from "pinia";
 import {useLoadingBar} from "naive-ui";
 import {reactive, type Ref} from "vue";
 import * as apis from './apis'
+import {baseURL} from "assets/config/network";
 
 const loadingBar = useLoadingBar();
 loadingBar.finish()
@@ -13,7 +14,7 @@ const layout = storeToRefs(useLayoutStore()).layout
 const user = storeToRefs(useUserStore()).user_info
 const sys_setting:Ref<Setting | any>  = storeToRefs(useSettingStore()).setting
 
-const bg = `url("${sys_setting.value?.loginBgImg}")`
+const bg = `url("${baseURL}/common/resource/sys?user_id=1")`
 
 const formdata = reactive({
   username: '',
@@ -26,13 +27,20 @@ const login = ()=>{
     layout.value = 'default'
   })
 }
+
+onMounted(()=>{
+  console.log(`${baseURL}/common/resource/sys?user_id=1`)
+})
 </script>
 
 <template>
   <div class="login-box">
+    <div class="img">
+
+    </div>
       <div class="login-panel">
         <div style="display: flex;justify-content: center;margin: 1rem 0">
-          <img :src="sys_setting.logo" width="200" alt="">
+          <img :src="baseURL+'/common/resource/sys?user_id=3'" width="200" alt="">
         </div>
         <div class="title">登陆 - {{sys_setting.title}}｜用户端 </div>
         <div class="form">
@@ -61,21 +69,27 @@ const login = ()=>{
   height: 100vh;
   width: 100vw;
   box-sizing: border-box;
-  flex-direction: column;
+  flex-direction: row;
   display: flex;
   justify-content: center;
   align-items: center;
   background: v-bind(bg) no-repeat center;
   background-size: cover;
+  .img{
+    width: 70%;
+    height: 100vh;
+  }
     .login-panel{
+      width: 30%;
+      height: 100vh;
       color: #f5f5f7;
-      width: 24rem;
-      border-radius: 8px;
+      //width: 24rem;
+      //border-radius: 8px;
       padding: 2rem;
       box-sizing: border-box;
       box-shadow: 0 0 10px rgba(0 0 0 / .2);
       backdrop-filter: blur(8px);
-      background: rgba(255 255 255 / .4);
+      background: rgba(0 0 0 / .4);
       .title{
         font-size: 1.2rem;
         font-weight: 800;
