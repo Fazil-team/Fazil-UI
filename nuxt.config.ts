@@ -3,7 +3,7 @@ import Components from 'unplugin-vue-components/vite';
 import {NaiveUiResolver} from 'unplugin-vue-components/resolvers';
 // https://v3.nuxtjs.org/docs/directory-structure/nuxt.config
 export default defineNuxtConfig({
-    ssr: false,
+    ssr: true,
     router: {
         options: {
             hashMode: true
@@ -38,8 +38,6 @@ export default defineNuxtConfig({
     piniaPersistedstate: {
         storage: 'sessionStorage',
     },
-    plugins: [
-        {src: '~/plugins/cropper', ssr: false}
-    ],
+    plugins: [],
     compatibilityDate: '2024-07-16',
 })

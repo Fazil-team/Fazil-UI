@@ -23,7 +23,6 @@ service.interceptors.response.use(
         }
         if (res.data?.code === 2) {
             const router = useRouter();
-            console.log(router.currentRoute.value.path == '/share')
             if(router.currentRoute.value.path == '/share'){
                 return res;
             }else{
@@ -36,7 +35,7 @@ service.interceptors.response.use(
         } else if (res.data?.code === 200) {
             return res
         } else {
-            msg.err(res.data.msg)
+            Promise.reject(err)
         }
     }, (err) => {
         if(err.code == "ERR_CANCELED"){

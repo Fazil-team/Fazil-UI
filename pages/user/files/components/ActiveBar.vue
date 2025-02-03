@@ -7,23 +7,23 @@ const emits = defineEmits(['download', 'delete', 'share', 'preview'])
 </script>
 
 <template>
-  <n-icon size="20" class="active-item" @click="()=>{
+  <n-icon size="20" class="active-item" @click.stop="()=>{
     emits('download')
   }">
     <CloudDownloadOutlined></CloudDownloadOutlined>
   </n-icon>
-  <n-icon size="20" class="active-item" @click="()=>{
+  <n-icon size="20" class="active-item" @click.stop="()=>{
     emits('delete')
   }">
     <DeleteOutlined></DeleteOutlined>
   </n-icon>
-  <n-icon size="20" class="active-item" @click="()=>{
+  <n-icon size="20" class="active-item" @click.stop="()=>{
     emits('share')
   }">
     <ShareAltOutlined></ShareAltOutlined>
   </n-icon>
 
-  <n-icon size="20" class="active-item" @click="()=>{
+  <n-icon size="20" class="active-item" @click.stop="()=>{
     emits('preview')
   }">
     <EyeOutlined></EyeOutlined>

@@ -153,28 +153,32 @@ const init = async () => {
     auth_api.logout()
     return
   }
-  let genRouterPaths = await gen_router_paths(user.value.menus);
-  console.log(genRouterPaths)
-  genRouterPaths.unshift(header)
-  menuOptions.value = genRouterPaths
-  loading.value = false
-  interval.value = setInterval(() => {
-    if (useOsTheme().value == 'dark') {
-      dark.value = darkTheme
-    } else {
-      dark.value = undefined
+  if(user.value){
+    let genRouterPaths = await gen_router_paths(user.value.menus);
+    console.log(genRouterPaths)
+    genRouterPaths.unshift(header)
+    menuOptions.value = genRouterPaths
+    loading.value = false
+    interval.value = setInterval(() => {
+      if (useOsTheme().value == 'dark') {
+        dark.value = darkTheme
+      } else {
+        dark.value = undefined
+      }
+    }, 100)
+    if (process.client) {
+      loadingBar.finish()
     }
-  }, 100)
-  if (process.client) {
-    loadingBar.finish()
+    getVer().then(res => {
+      version.value = res.data.data
+    })
   }
-  getVer().then(res => {
-    version.value = res.data.data
-  })
 }
 
 const init_ws = async () => {
-  creatWebSocket(`${wsURL}/wsInterface/${user.value.token}`)
+  if(user.value){
+    creatWebSocket(`${wsURL}/wsInterface/${user.value.token}`)
+  }
 }
 
 onMounted(async () => {
