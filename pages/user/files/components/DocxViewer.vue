@@ -7,8 +7,10 @@ import {review_file} from '../apis'
 const previewfile = (id: string) => {
   review_file(id).then(response=>{
     let docData = new Blob([response.data]);
+    console.log("data", docData)
     let docxDiv = document.getElementsByClassName("docxDiv");
-    renderAsync(docData, docxDiv[0], null, {
+    console.log('div',docxDiv)
+    renderAsync(docData, docxDiv, null, {
       inWrapper: true, // 启用围绕文档内容渲染包装器
       ignoreWidth: false, // 禁止页面渲染宽度
       ignoreHeight: false, // 禁止页面渲染高度

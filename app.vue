@@ -14,6 +14,7 @@ const themeOverrides = theme
 
 
 onMounted(()=>{
+  layout.value = 'default'
   load_setting().then(res=>{
     setting.value = res.data.data
   })
@@ -22,19 +23,22 @@ onMounted(()=>{
 
 <template>
   <div>
-    <!--    <FullLoading v-if="isFullLoading" />-->
-    <n-config-provider :theme-overrides="themeOverrides">
-      <n-notification-provider>
-        <n-dialog-provider>
-          <n-message-provider>
-            <n-loading-bar-provider>
-              <NuxtLayout :name="layout">
-              </NuxtLayout>
-            </n-loading-bar-provider>
-          </n-message-provider>
-        </n-dialog-provider>
-      </n-notification-provider>
-    </n-config-provider>
+<!--    <a-watermark content="请注册">-->
+      <!--    <FullLoading v-if="isFullLoading" />-->
+      <n-config-provider :theme-overrides="themeOverrides">
+        <n-notification-provider>
+          <n-dialog-provider>
+            <n-message-provider>
+              <n-loading-bar-provider>
+                <NuxtLayout :name="layout">
+                </NuxtLayout>
+              </n-loading-bar-provider>
+            </n-message-provider>
+          </n-dialog-provider>
+        </n-notification-provider>
+      </n-config-provider>
+<!--    </a-watermark>-->
+
   </div>
 
 </template>
@@ -43,14 +47,14 @@ onMounted(()=>{
 .page-enter-active,
 .page-leave-active {
   opacity: 1;
-  transform: translate(0);
-  transition: all .4s;
+  transform: translate(0) scale(1);
+  transition: all .3s;
 }
 
 .page-enter-from,
 .page-leave-to {
   filter: blur(8px);
-  transform: translate(10px);
+  transform: translateY(-20px) scale(.9);
   opacity: 0;
   //filter: blur(.6rem);
 }

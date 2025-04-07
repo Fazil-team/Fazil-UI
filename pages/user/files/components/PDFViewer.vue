@@ -5,8 +5,8 @@ import {baseURL} from "assets/config/network";
 const viewer = reactive({
   open: false,
   url: ``,
-  show(token){
-    viewer.url = `${baseURL}/stream/perview/${token}`
+  show(row){
+    viewer.url = `${baseURL}/stream/download_file?file_id=${row.fileId}`
     viewer.open = true
   }
 })
@@ -19,7 +19,7 @@ defineExpose({
 <template>
   <n-modal v-model:show="viewer.open">
     <n-card
-        style="width: 800px"
+        style="width: 50%;height: 90vh"
         title="PDF预览"
         :bordered="true"
         role="dialog"
@@ -28,7 +28,7 @@ defineExpose({
       <template #header>
         创建文件夹
       </template>
-      <div style="height: 500px;">
+      <div style="height: 100%;">
         <iframe style="width: 100%;height: 100%;overflow: hidden;"
                 :src="viewer.url"></iframe>
       </div>

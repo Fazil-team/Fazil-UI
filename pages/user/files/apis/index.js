@@ -155,3 +155,11 @@ export const delete_share = (share_id) => {
         })
     })
 }
+
+export const renameFile = (file) => {
+    return new Promise(r => {
+        service.post('/stream/rename_file', file).then(res => {
+            r(res)
+        })
+    })
+}

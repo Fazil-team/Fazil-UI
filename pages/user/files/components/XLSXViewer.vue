@@ -3,20 +3,20 @@ import {onMounted, reactive} from "vue";
 import {baseURL} from "assets/config/network.js";
 
 const excel = ref()
-// let XLSX = ref(null);
+let XLSX = ref(null);
 
 
 const load_modules = async () => {
-  // XLSX.value = await import('xlsx')
+  XLSX.value = await import('xlsx')
 }
 
 
 const viewer = reactive({
   open: false,
   url: ``,
-  show: async (token) => {
+  show: async (row) => {
     await load_modules()
-    viewer.url = `${baseURL}/stream/perview/${token}`
+    viewer.url = `${baseURL}/stream/download_file?file_id=${row.fileId}`
     const file = await (await fetch(viewer.url)).arrayBuffer();
     const workbook = XLSX.value.read(file);
     var first_sheet = workbook.Sheets[workbook.SheetNames[0]];

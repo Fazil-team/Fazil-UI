@@ -21,12 +21,16 @@ service.interceptors.response.use(
         if(res.data instanceof Blob){
             return res
         }
+        if(res.data?.code === 1){
+            msg.err(res.data?.msg)
+        }
         if (res.data?.code === 2) {
             const router = useRouter();
             if(router.currentRoute.value.path == '/share'){
                 return res;
             }else{
                 storeToRefs(useLayoutStore()).layout.value = 'login'
+                console.log( storeToRefs(useLayoutStore()).layout.value)
                 msg.err(res.data.msg)
             }
         } else if (res.data?.code === 3) {

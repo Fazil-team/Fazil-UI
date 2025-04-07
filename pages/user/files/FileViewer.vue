@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {ref, reactive, onMounted, nextTick} from "vue";
+import {ref, reactive, onMounted, nextTick, onUnmounted} from "vue";
 import {useHead} from "unhead";
 import {definePageMeta} from "#imports";
 import {type DropdownOption, NButton} from "naive-ui";
@@ -14,6 +14,11 @@ import ActiveBar from "~/pages/user/files/components/ActiveBar.vue";
 import XLSXViewer from "~/pages/user/files/components/XLSXViewer.vue";
 import * as msg from '~/assets/utils/message'
 import Share_file_dialog from "~/pages/user/files/dialogs/share_file_dialog.vue";
+import VideoViewer from "~/pages/user/files/components/VideoViewer.vue";
+import {type Setting, useSettingStore} from "~/store/UseSettingStore";
+import {storeToRefs} from "pinia";
+import {baseURL} from "assets/config/network";
+const sys_setting: Ref<Setting | any> = storeToRefs(useSettingStore()).setting
 
 let id = useRouter().currentRoute.value.params.id;
 const upload_file_dialog = ref()
@@ -27,6 +32,7 @@ const doc_viewer_ref = ref()
 const pdf_viewer_ref = ref()
 const xlsx_viewer_ref = ref()
 const share_file_dialog = ref()
+const video_viewer_dialog = ref()
 const columns = [
   {
     title: '',
@@ -37,17 +43,33 @@ const columns = [
       })
     }
   },
+  // {
+  //   title: '文件名称',
+  //   key: 'fileName',
+  //   minWidth: '200px',
+  //   render(row) {
+  //     return h('span', {
+  //       class: 'file_name',
+  //       onClick: () => {
+  //         file_name_click(row)
+  //       }
+  //     }, row.fileName)
+  //   }
+  // },
   {
     title: '文件名称',
     key: 'fileName',
     minWidth: '200px',
     render(row) {
-      return h('span', {
-        class: 'file_name',
-        onClick: ()=>{
-          file_name_click(row)
-        }
-      }, row.fileName)
+      return h(FileName, {
+        data: row,
+        onUpdate: ()=>{
+          init()
+        },
+        onClick: () => {
+                  file_name_click(row)
+                }
+      })
     }
   },
   {
@@ -57,19 +79,20 @@ const columns = [
     render(row: any) {
       return h(ActiveBar, {
         fileId: row.fileId,
-        onDownload: ()=>{
-          apis.add_download_task(row)
+        onDownload: () => {
+          download(row)
+          // apis.add_download_task(row)
         },
-        onDelete: ()=>{
+        onDelete: () => {
           apis.remove_file(row.fileId).then(res => {
             init()
           })
         },
-        onShare: ()=>{
+        onShare: () => {
           current_row.value = row
           handleSelect("share")
         },
-        onPreview: ()=>{
+        onPreview: () => {
           file_name_click(row)
         }
       }, null)
@@ -144,9 +167,12 @@ const init = () => {
     }
   })
 }
+let interval = setInterval(()=>{useHead({
+  title: `${sys_setting.value.title}｜我的文件`,
+})},100)
 
-useHead({
-  title: '致飞网盘｜我的文件',
+onUnmounted(()=>{
+  clearInterval(interval)
 })
 
 definePageMeta({
@@ -156,7 +182,14 @@ definePageMeta({
 
 const current_row = ref()
 
+import Excel from "assets/icon/colorful/Excel.vue";
+import FileName from "~/pages/user/files/components/FileName.vue";
+
 const options: DropdownOption[] = [
+  {
+    label: '重命名',
+    key: 'rename'
+  },
   {
     label: '分享',
     key: 'share'
@@ -175,11 +208,16 @@ const onClickoutside = () => {
   showDropdown.value = false
 }
 
+const download = (fileInfo) => {
+  window.open(`${baseURL}/stream/download_file?file_id=${fileInfo.fileId}`)
+}
+
 const handleSelect = (str) => {
   let current = current_row.value
   switch (str) {
     case 'download':
-      apis.add_download_task(current)
+      console.log(123)
+      download(current)
       break
     case 'delete':
       apis.remove_file(current.fileId).then(res => {
@@ -188,6 +226,9 @@ const handleSelect = (str) => {
       break
     case 'share':
       share_file_dialog.value.dialog.show(current)
+      break
+    case 'rename':
+      current.edit = true
       break
   }
   showDropdown.value = false
@@ -199,21 +240,19 @@ interface Song {
   length: string
 }
 
-const file_name_click = (row)=>{
-  switch (row.fileType){
+const file_name_click = (row) => {
+  switch (row.fileType) {
     case 'doc':
       doc_viewer_ref.value.viewer.show(row.fileId)
       break
     case 'pdf':
-      apis.get_key(row.fileId).then(res=>{
-        pdf_viewer_ref.value.viewer.show(res.data.data)
-      })
+        pdf_viewer_ref.value.viewer.show(row)
       break
     case 'excel':
-      apis.get_key(row.fileId).then(res=>{
-        console.log(xlsx_viewer_ref.value)
-        xlsx_viewer_ref.value.viewer.show(res.data.data)
-      })
+        xlsx_viewer_ref.value.viewer.show(row)
+      break
+    case 'media':
+        video_viewer_dialog.value.viewer.show(row)
       break
   }
 }
@@ -232,7 +271,7 @@ const rowProps = (row) => {
       });
     },
     onClick: () => {
-      switch (row.fileType){
+      switch (row.fileType) {
         case 'folder':
           let path = ''
           if (useRouter().currentRoute.value.path == '/user/files/') {
@@ -268,9 +307,9 @@ const path = () => {
   return {path, paths}
 }
 
-const previous = ()=>{
+const previous = () => {
   let path = useRouter().currentRoute.value.path
-  if(path == '/user/files'){
+  if (path == '/user/files') {
     msg.warn("已经在根目录啦~")
     return;
   }
@@ -286,15 +325,21 @@ const previous = ()=>{
 <template>
   <div>
     <n-card id="active">
-      <n-button style="margin-right: 1rem;" type="primary" @click="upload_file_dialog.dialog.show()">上传文件</n-button>
-      <n-button style="margin-right: 1rem;" type="primary" @click="createFolderRef.dialog.show(filePath)">创建文件夹</n-button>
-      <n-button type="primary" @click="previous()">上一级</n-button>
+      <a-button style="margin-right: 1rem;" type="primary" @click="upload_file_dialog.dialog.show()">上传文件</a-button>
+      <a-button style="margin-right: 1rem;" type="primary" @click="createFolderRef.dialog.show(filePath)">创建文件夹
+      </a-button>
+      <a-button type="primary" @click="previous()">上一级</a-button>
     </n-card>
     <n-card style="margin-top: 1rem;">
       <template #header>
         我的文件
         <div style="height: 1.3rem">
-          <n-tag type="primary">根目录</n-tag> <span v-for="(item, index) in path().paths"> > <n-tag v-if="index == path().paths.length-1" type="success">{{ item }}</n-tag> <n-tag v-else type="primary">{{ item }}</n-tag></span>
+          <n-tag type="primary">根目录</n-tag>
+          <span v-for="(item, index) in path().paths"> > <n-tag v-if="index == path().paths.length-1"
+                                                                type="success">{{ item }}</n-tag> <n-tag v-else
+                                                                                                         type="primary">{{
+              item
+            }}</n-tag></span>
         </div>
       </template>
 
@@ -327,35 +372,40 @@ const previous = ()=>{
     </n-card>
     <upload_file_dialog :filePid="filePid" @upload_success="init()" :path="filePath" ref="upload_file_dialog"/>
     <create_folder_dialog @success="init()" ref="createFolderRef"/>
-    <DocxViewer ref="doc_viewer_ref" />
-    <PDFViewer ref="pdf_viewer_ref" />
-    <XLSXViewer ref="xlsx_viewer_ref" />
+    <DocxViewer ref="doc_viewer_ref"/>
+    <PDFViewer ref="pdf_viewer_ref"/>
+    <XLSXViewer ref="xlsx_viewer_ref"/>
     <share_file_dialog ref="share_file_dialog"/>
+    <video-viewer ref="video_viewer_dialog" />
   </div>
 </template>
 
 <style scoped lang="scss">
-:deep(.n-scrollbar-container){
-  .n-data-table-tr{
+:deep(.n-scrollbar-container) {
+  .n-data-table-tr {
     cursor: pointer;
   }
 }
-:deep(.file_name){
+
+:deep(.file_name) {
   transition: all .2s;
-  &:hover{
+
+  &:hover {
     color: #3471df;
   }
 }
 
-:deep(.n-data-table-tr){
-  .active-item{
+:deep(.n-data-table-tr) {
+  .active-item {
     color: rgba(0 0 0 / 0);
     transition: all .2s;
 
   }
-  &:hover .active-item{
+
+  &:hover .active-item {
     color: var(--n-td-text-color);
-    &:hover{
+
+    &:hover {
       color: #00dc82;
     }
   }

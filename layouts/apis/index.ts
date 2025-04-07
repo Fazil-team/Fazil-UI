@@ -18,7 +18,7 @@ export const logout = () => {
 
 
 export const login = (data: any) => {
-    return new Promise(r => {
+    return new Promise((r,reject) => {
         service.post(`/auth/login/client`, data).then(res => {
             const user = storeToRefs(useUserStore()).user_info
 
@@ -26,6 +26,8 @@ export const login = (data: any) => {
             user.value = res.data.data
             msg.success(`登陆成功`)
             r(res)
+        }).catch(err=>{
+            reject(err)
         })
     })
 }
@@ -43,6 +45,22 @@ export const get_user_storage = () => {
 export const getVer = () => {
     return new Promise(r => {
         service.get("/setting/version").then(res => {
+            r(res)
+        })
+    })
+}
+
+export const sendEmailCode = (email)=>{
+    return new Promise(r=>{
+        service.get(`/sms/send_email_code?email=${email}`).then(res=>{
+            r(res)
+        })
+    })
+}
+
+export const register = (data)=>{
+    return new Promise(r=>{
+        service.post('/auth/register', data).then(res=>{
             r(res)
         })
     })

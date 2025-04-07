@@ -1,12 +1,24 @@
 <script setup lang="ts">
-import {ref, reactive} from "vue";
+import {ref, reactive, onUnmounted} from "vue";
 import '@arco-design/web-vue/dist/arco.css';
 import FileIcon from "~/pages/user/files/components/FileIcon.vue";
 import {useRouter} from "#app";
 import {check_share_code, get_share_user_info} from "~/pages/user/files/apis";
 import {baseURL} from "assets/config/network.js";
 import {size2Str} from "assets/utils/commons";
+import ICP from "~/components/ICP.vue";
+import {useHead} from "unhead";
+import {type Setting, useSettingStore} from "~/store/UseSettingStore";
+import {storeToRefs} from "pinia";
+const sys_setting: Ref<Setting | any> = storeToRefs(useSettingStore()).setting
 
+let interval = setInterval(()=>{useHead({
+  title: `${sys_setting.value.title}｜ 文件分享`,
+})},100)
+
+onUnmounted(()=>{
+  clearInterval(interval)
+})
 const router = useRouter();
 
 const onFinish = () => {
@@ -85,6 +97,9 @@ const download = () => {
         </div>
       </div>
     </div>
+    <div>
+      <ICP color="#FFF" />
+    </div>
   </div>
 </template>
 
@@ -94,7 +109,9 @@ const download = () => {
   height: 100vh;
   background: #3370ff;
   display: flex;
-  justify-content: center;
+  justify-content: space-around;
+  flex-direction: column;
+  align-items: center;
 
   .share-box {
     width: 40rem;

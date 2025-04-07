@@ -8,7 +8,9 @@ const settings = storeToRefs(useSettingStore())?.setting
 </script>
 
 <template>
-  <img :src="`${baseURL}/common/resource/sys?user_id=3`" width="25" alt="">
+  <div style="width: 100%;height: 100%;display: flex;justify-content: center;align-items: center">
+    <img :src="`${baseURL}/common/resource/sys?user_id=3`" width="25" alt="">
+  </div>
 </template>
 
 <style scoped>

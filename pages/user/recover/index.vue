@@ -1,7 +1,7 @@
 <script setup>
 import {useHead} from "unhead";
 import {definePageMeta} from "#imports";
-import {reactive, ref} from "vue";
+import {onUnmounted, reactive, ref} from "vue";
 import FileIcon from "~/pages/user/files/components/FileIcon.vue";
 import ActiveBar from "~/pages/user/files/components/ActiveBar.vue";
 import * as apis from "~/pages/user/files/apis";
@@ -9,11 +9,18 @@ import {size2Str} from "assets/utils/commons";
 import {load_all_shares} from "~/pages/user/share/api/index";
 import {NButton} from 'naive-ui'
 import * as msg from '~/assets/utils/message'
+import { useSettingStore} from "~/store/UseSettingStore";
+import {storeToRefs} from "pinia";
+const sys_setting = storeToRefs(useSettingStore()).setting
+let interval = setInterval(()=>{
+  useHead({
+    title: `${sys_setting.value.title}｜回收站`,
+  })
+},100)
 
-useHead({
-  title: '致飞网盘｜回收站',
+onUnmounted(()=>{
+  clearInterval(interval)
 })
-
 definePageMeta({
   name: `回收站 `,
   parent: null

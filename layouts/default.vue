@@ -10,6 +10,7 @@ import {
   useDialog,
   useNotification
 } from "naive-ui";
+import * as msg from '@/assets/utils/message'
 
 import {HddOutlined} from '@vicons/antd'
 import swBtn from '@/components/switch.vue'
@@ -30,7 +31,9 @@ import {creatWebSocket} from '@/assets/utils/websocket'
 import {size2Str} from "../assets/utils/commons.js";
 import {get_user_storage, getVer} from "~/layouts/apis";
 import {wsURL, baseURL} from "assets/config/network.js";
+import {useUploadTaskStore} from "~/store/UseUploadFileTask";
 
+const tasks = storeToRefs(useUploadTaskStore()).task
 
 const links = ref([])
 const user = storeToRefs(useUserStore()).user_info
@@ -42,6 +45,10 @@ const percent = ref(0)
 const path = ref()
 const loadingBar = useLoadingBar();
 const settings_open = ref(false)
+
+const keepalive = {
+  include: ["/user/files"],
+};
 
 const options = [
   {
@@ -282,7 +289,7 @@ watch(()=>path.value, (value, oldValue, onCleanup)=>{
                    style="display: flex;justify-content: left;align-items: center;width: 100%;flex-wrap: wrap">
                 <div style="margin: 0 1rem">
                   <n-dropdown trigger="hover" :options="options" @select="handleSelect">
-                    <n-avatar :src="baseURL+`/common/resource/avatar?user_id=${user?.id}`"></n-avatar>
+                    <n-avatar circle :src="baseURL+`/common/resource/avatar?user_id=${user?.id}`"></n-avatar>
                   </n-dropdown>
                 </div>
                 <div>
@@ -291,7 +298,7 @@ watch(()=>path.value, (value, oldValue, onCleanup)=>{
                 </div>
                 <div style="width: 100%;padding: 0 1rem;display: flex;justify-content: start">
                   <n-tag round :bordered="false" type="success" size="small">
-                    剩余空间：{{ size2Str(storage?.total_storage - storage?.used_storage) }}
+                   存储空间：{{ size2Str(storage?.total_storage - storage?.used_storage) }}
                     <template #icon>
                       <n-icon>
                         <HddOutlined></HddOutlined>
@@ -308,12 +315,12 @@ watch(()=>path.value, (value, oldValue, onCleanup)=>{
                 </div>
               </div>
               <div v-else style="margin-left: 1rem" class="small">
-                <n-avatar :src="baseURL+`/common/resource/avatar?user_id=${user?.id}`"></n-avatar>
-                <n-progress
-                    style="width: 30px;height: 30px;font-size: .2rem"
-                    type="circle"
-                    :percentage="percent"
-                />
+                <n-avatar circle :src="baseURL+`/common/resource/avatar?user_id=${user?.id}`"></n-avatar>
+<!--                <n-progress-->
+<!--                    style="width: 30px;height: 30px;font-size: .2rem"-->
+<!--                    type="circle"-->
+<!--                    :percentage="percent"-->
+<!--                />-->
               </div>
             </div>
           </div>
@@ -325,45 +332,45 @@ watch(()=>path.value, (value, oldValue, onCleanup)=>{
                 <Bread/>
               </div>
               <div style="flex-direction: row;display: flex;">
-                <div style="margin-right: 1rem;">
-                  <n-popover style="width: 400px;" trigger="click">
-                    <template #trigger>
-                      <n-badge :value="download_tasks.length">
-                        <i style="font-size: 1.2rem;cursor: pointer" class="iconfont icon-download"></i>
-                      </n-badge>
-                    </template>
-                    <template #header>
-                      <div
-                          style="display: flex;justify-content: center;align-items: center;font-size: 1.2rem;font-weight: 800;">
-                        下载任务
-                      </div>
-                    </template>
-                    <!--                    {{download_tasks}}-->
-                    <n-scrollbar style="max-height: 300px">
-                      <n-empty v-if="download_tasks.length == 0" description="当前没有下载任务">
-                        <template #extra>
+<!--                <div style="margin-right: 1rem;">-->
+<!--                  <n-popover style="width: 600px;height: 800px" trigger="click">-->
+<!--                    <template #trigger>-->
+<!--                      <n-badge :value="download_tasks.length">-->
+<!--                        <i style="font-size: 1.2rem;cursor: pointer" class="iconfont icon-sorting"></i>-->
+<!--                      </n-badge>-->
+<!--                    </template>-->
+<!--                    <template #header>-->
+<!--                      <div-->
+<!--                          style="display: flex;justify-content: center;align-items: center;font-size: 1.2rem;font-weight: 800;">-->
+<!--                        上传任务-->
+<!--                      </div>-->
+<!--                    </template>-->
+<!--                                        {{tasks}}-->
+<!--&lt;!&ndash;                    <n-scrollbar style="max-height: 740px">&ndash;&gt;-->
+<!--&lt;!&ndash;                      <n-empty v-if="download_tasks.length == 0" description="当前没有上传任务">&ndash;&gt;-->
+<!--&lt;!&ndash;                        <template #extra>&ndash;&gt;-->
 
-                        </template>
-                      </n-empty>
-                      <div v-else v-for="item in download_tasks"
-                           style="border: 1px solid #dfdfdf;padding: .5rem;border-radius: 4px;margin: .5rem 0">
-                        <div style="display: flex;justify-content: space-between">
-                          <div>{{ item.file_name }}</div>
-                          <div @click="cancel_download(item.file_id)" class="close-btn"><i
-                              class="iconfont icon-close"></i></div>
-                        </div>
-                        <n-progress status="success" :show-indicator="false" type="line" :percentage="item.percent"
-                                    :processing="item.percent != 100"/>
-                        <div style="display: flex;justify-content: space-between">
-                          <div>{{ size2Str(item.speed) }}/s</div>
-                          <div>{{ item.percent }}%</div>
-                        </div>
-                      </div>
-                    </n-scrollbar>
-                    <template #footer>
-                    </template>
-                  </n-popover>
-                </div>
+<!--&lt;!&ndash;                        </template>&ndash;&gt;-->
+<!--&lt;!&ndash;                      </n-empty>&ndash;&gt;-->
+<!--&lt;!&ndash;                      <div v-else v-for="item in tasks"&ndash;&gt;-->
+<!--&lt;!&ndash;                           style="border: 1px solid #dfdfdf;padding: .5rem;border-radius: 4px;margin: .5rem 0">&ndash;&gt;-->
+<!--&lt;!&ndash;                        <div style="display: flex;justify-content: space-between">&ndash;&gt;-->
+<!--&lt;!&ndash;                          <div>{{ item?.name }}</div>&ndash;&gt;-->
+<!--&lt;!&ndash;                          <div>{{ item }}</div>&ndash;&gt;-->
+<!--&lt;!&ndash;                          <div @click="cancel_download(item.file_id)" class="close-btn"><i&ndash;&gt;-->
+<!--&lt;!&ndash;                              class="iconfont icon-close"></i></div>&ndash;&gt;-->
+<!--&lt;!&ndash;                        </div>&ndash;&gt;-->
+<!--&lt;!&ndash;                        <n-progress status="success" :show-indicator="false" type="line" :percentage="item.percentage"&ndash;&gt;-->
+<!--&lt;!&ndash;                                    :processing="item.percentage != 100"/>&ndash;&gt;-->
+<!--&lt;!&ndash;                        <div style="display: flex;justify-content: end">&ndash;&gt;-->
+<!--&lt;!&ndash;                          <div>{{ item.percentage }}%</div>&ndash;&gt;-->
+<!--&lt;!&ndash;                        </div>&ndash;&gt;-->
+<!--&lt;!&ndash;                      </div>&ndash;&gt;-->
+<!--&lt;!&ndash;                    </n-scrollbar>&ndash;&gt;-->
+<!--&lt;!&ndash;                    <template #footer>&ndash;&gt;-->
+<!--&lt;!&ndash;                    </template>&ndash;&gt;-->
+<!--                  </n-popover>-->
+<!--                </div>-->
                 <div style="display: flex;align-items: center">
                   <swBtn @change="changeTheme"></swBtn>
                 </div>
@@ -383,10 +390,12 @@ watch(()=>path.value, (value, oldValue, onCleanup)=>{
           <!--          </n-layout-header>-->
           <n-layout-content bordered
                             style="height: calc(100vh - 6rem);display: flex;align-items: center;padding: 1rem 1rem;width: 100%;">
-            <NuxtPage/>
+            <NuxtPage :keepalive/>
           </n-layout-content>
           <n-layout-footer bordered style="height: 3rem;display: flex;align-items: center;padding: 0 0 0 1rem">Powered
             By Virus_Cui <span style="margin-left: 1rem;font-weight: 800;">V {{ version }}</span>
+            <ICP color="#000" />
+
           </n-layout-footer>
         </n-layout>
       </n-layout>
@@ -395,6 +404,12 @@ watch(()=>path.value, (value, oldValue, onCleanup)=>{
         <n-drawer-content title="个人设置">
           <n-form-item label="头像">
             <n-upload
+                :on-before-upload="data => {
+                  if((data.file.file.size / 1024) > 1024*5){
+                    msg.warn('文件过大')
+                    Promise.reject('文件过大')
+                  }
+                }"
                 :headers="{
                   'Authorization': getToken()
                 }"

@@ -20,8 +20,10 @@ onMounted(()=>{
 </script>
 
 <template>
-  <img v-if="!dark" :src="`${baseURL}/common/resource/sys?user_id=4`" width="50" style="margin-left: .5rem" alt="">
-  <img v-else :src="`${baseURL}/common/resource/sys?user_id=5`" width="50" style="margin-left: .5rem"  alt="">
+<!--  <img v-if="!dark" :src="`${baseURL}/common/resource/sys?user_id=4`" width="50" style="margin-left: .5rem" alt="">-->
+<!--  <img v-else :src="`${baseURL}/common/resource/sys?user_id=5`" width="50" style="margin-left: .5rem"  alt="">-->
+  <span style="font-size: 1.4rem;font-style: normal;font-weight: 800;padding: 0 0 0 .2rem;text-align: center;line-height: 1.2">{{ set?.title }}</span>
+
 </template>
 
 <style scoped>

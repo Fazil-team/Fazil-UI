@@ -24,7 +24,13 @@ const props = defineProps(['row'])
   <Folder class="colorful-icon" v-if="props.row.fileType=='folder'"/>
   <PDF class="colorful-icon" v-if="props.row.fileType=='pdf'"/>
   <Txt class="colorful-icon" v-if="props.row.fileType=='txt'"/>
-  <Video class="colorful-icon" v-if="props.row.fileType=='media'"/>
+  <Video class="colorful-icon" v-if="props.row.fileType=='media' && props.row.fileAvatar == null"/>
+  <n-image
+      style="zoom: .5;"
+      v-if="props.row.fileType == 'media' && props.row.fileAvatar != null"
+      width="100"
+      :src="`${baseURL}/stream/video/avatar/${props.row.fileId}`"
+  />
   <n-image
       style="zoom: .3;"
       v-if="props.row.fileType == 'img'"
