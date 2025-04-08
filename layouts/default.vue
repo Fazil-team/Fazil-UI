@@ -87,7 +87,17 @@ const header = {
 const menuOptions = ref([])
 
 const collapsed = ref(false)
+const small = ref(false)
 let interval = ref()
+
+setInterval(()=>{
+  small.value = window.innerWidth < 768
+},300)
+
+watch(()=>small.value, (value)=>{
+  collapsed.value = small.value
+  console.log(value)
+})
 
 
 watch(() => router.currentRoute.value, () => {

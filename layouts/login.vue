@@ -1,7 +1,7 @@
 <template>
   <div class="min-h-screen flex animate-fadeIn">
     <!-- 左侧品牌区 -->
-    <div class="w-2/5 bg-gradient-to-br from-blue-900 to-blue-800 text-white p-12 flex flex-col justify-between relative overflow-hidden">
+    <div class="w-2/5 bg-gradient-to-br from-blue-900 to-blue-800 text-white p-12 flex flex-col justify-between relative overflow-hidden left-panel">
       <div class="relative z-10">
         <h1 class="text-3xl font-bold mb-4">{{ sys_setting.title }}</h1>
         <p class="text-lg text-blue-100">安全可靠的企业级数据存储与协作平台</p >
@@ -26,7 +26,7 @@
       <div style="width: 100%;height: 100%;backdrop-filter: blur(16px)" class="p-12 flex items-center justify-center">
         <div class="w-[480px]" style="">
           <div class="text-center mb-8">
-            <h2 class="text-2xl font-bold text-gray-800">{{ isLogin ? '欢迎回来' : '创建企业账号' }}</h2>
+            <h2 class="text-2xl font-bold text-gray-800">{{ isLogin ? '欢迎回来' : '创建账号' }}</h2>
             <p class="text-gray-300 mt-2">{{ isLogin ? '请登录您的账号' : '开始使用网盘服务' }}</p >
           </div>
           <div class="mb-6 flex justify-center space-x-8">
@@ -121,12 +121,10 @@
             </a-button>
             <div class="mt-8">
               <div class="relative">
-                <div class="absolute inset-0 flex items-center">
-                  <div class="w-full border-t border-gray-200"></div>
-                </div>
-                <div class="relative flex justify-center">
-                  <span class="px-4 text-sm text-white">其他登录方式</span>
-                </div>
+
+                <n-divider title-placement="center">
+                  <span style="color: #FFF">其他登录方式</span>
+                </n-divider>
               </div>
               <div class="mt-6 flex justify-center space-x-6">
                 <a-button class="!rounded-button whitespace-nowrap" shape="round">
@@ -361,5 +359,14 @@ const jump_in = ()=>{
 }
 .right-panel{
   background: v-bind(bg) no-repeat center rgba(0 0 0 / .2);
+}
+
+@media (max-width: 768px) {
+  .left-panel{
+    display: none;
+  }
+  .right-panel{
+    width: 100vw;
+  }
 }
 </style>

@@ -22,11 +22,11 @@ const rename = (data)=>{
   <div>
     <div v-if="props.data.edit" >
       <n-space>
-        <n-input v-model:value="props.data.fileName"></n-input>
-        <n-button strong secondary type="primary" @click="rename(props.data)">
+        <n-input @click.stop v-model:value="props.data.fileName"></n-input>
+        <n-button strong secondary type="primary" @click.stop="rename(props.data)">
           确定
         </n-button>
-        <n-button strong secondary type="info" @click="props.data.edit = false">
+        <n-button strong secondary type="info" @click.stop="props.data.edit = false">
           取消
         </n-button>
       </n-space>

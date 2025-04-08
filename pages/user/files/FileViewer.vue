@@ -18,6 +18,7 @@ import VideoViewer from "~/pages/user/files/components/VideoViewer.vue";
 import {type Setting, useSettingStore} from "~/store/UseSettingStore";
 import {storeToRefs} from "pinia";
 import {baseURL} from "assets/config/network";
+
 const sys_setting: Ref<Setting | any> = storeToRefs(useSettingStore()).setting
 
 let id = useRouter().currentRoute.value.params.id;
@@ -63,12 +64,12 @@ const columns = [
     render(row) {
       return h(FileName, {
         data: row,
-        onUpdate: ()=>{
+        onUpdate: () => {
           init()
         },
         onClick: () => {
-                  file_name_click(row)
-                }
+          file_name_click(row)
+        }
       })
     }
   },
@@ -108,7 +109,10 @@ const columns = [
   {
     title: '创建时间',
     key: 'createTime',
-    width: '180'
+    width: '180',
+    sorter(rowA, rowB) {
+      return rowA.createTime - rowB.createTime
+    }
   },
   // {
   //   title: '操作',
@@ -150,13 +154,16 @@ const pagination = reactive({
   },
 });
 
+const sort_style = ref()
+
 const init = () => {
   loading.value = true
   height.value = `calc(100vh - ${document.querySelector(".n-card").clientHeight}px - 2rem - 3rem - 10rem - 1.3rem)`;
   apis.load_files({
     current_page: pagination.page,
     page_size: pagination.pageSize,
-    path: filePath.value
+    path: filePath.value,
+    sort: sort_style.value
   }).then(res => {
     loading.value = false
     tb_data.value = res.data.data.data
@@ -167,11 +174,19 @@ const init = () => {
     }
   })
 }
-let interval = setInterval(()=>{useHead({
-  title: `${sys_setting.value.title}｜我的文件`,
-})},100)
 
-onUnmounted(()=>{
+const sort = (data)=>{
+  sort_style.value = data?.order
+  init()
+}
+
+let interval = setInterval(() => {
+  useHead({
+    title: `${sys_setting.value.title}｜我的文件`,
+  })
+}, 100)
+
+onUnmounted(() => {
   clearInterval(interval)
 })
 
@@ -186,6 +201,10 @@ import Excel from "assets/icon/colorful/Excel.vue";
 import FileName from "~/pages/user/files/components/FileName.vue";
 
 const options: DropdownOption[] = [
+  {
+    label: '预览',
+    key: 'view'
+  },
   {
     label: '重命名',
     key: 'rename'
@@ -230,6 +249,9 @@ const handleSelect = (str) => {
     case 'rename':
       current.edit = true
       break
+    case 'view':
+      file_name_click(current)
+      break
   }
   showDropdown.value = false
 }
@@ -246,13 +268,13 @@ const file_name_click = (row) => {
       doc_viewer_ref.value.viewer.show(row.fileId)
       break
     case 'pdf':
-        pdf_viewer_ref.value.viewer.show(row)
+      pdf_viewer_ref.value.viewer.show(row)
       break
     case 'excel':
-        xlsx_viewer_ref.value.viewer.show(row)
+      xlsx_viewer_ref.value.viewer.show(row)
       break
     case 'media':
-        video_viewer_dialog.value.viewer.show(row)
+      video_viewer_dialog.value.viewer.show(row)
       break
   }
 }
@@ -344,6 +366,7 @@ const previous = () => {
       </template>
 
       <n-data-table
+          :on-update:sorter="sort"
           :style="{ height: `${height}` }"
           flex-height
           :loading="loading"
@@ -376,7 +399,7 @@ const previous = () => {
     <PDFViewer ref="pdf_viewer_ref"/>
     <XLSXViewer ref="xlsx_viewer_ref"/>
     <share_file_dialog ref="share_file_dialog"/>
-    <video-viewer ref="video_viewer_dialog" />
+    <video-viewer ref="video_viewer_dialog"/>
   </div>
 </template>
 

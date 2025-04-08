@@ -86,7 +86,7 @@ onUnmounted(()=>{
               </div>
               <div class="tags">
                 <n-space>
-                  <n-tag type="success" size="small">管理员</n-tag>
+                  <n-tag type="success" size="small">{{ user?.role }}</n-tag>
                 </n-space>
               </div>
 <!--              <n-divider />-->
