@@ -1,75 +1,21 @@
-# Nuxt 3 Minimal Starter
+<p align="center">
+  <img src="https://github.com/Fazil-team/Fazil/blob/main/logo.png" alt="Fazil Logo" width="200"/>
+</p>
 
-Look at the [Nuxt 3 documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+# Fazil 网盘系统-前端仓库
 
-## Setup
+![License](https://img.shields.io/badge/license-AGPL--3.0-brightgreen)
+![Version](https://img.shields.io/badge/version-1.0.0-blue)
+![GitHub Stars](https://img.shields.io/github/stars/Fazil-team/Fazil)
 
-Make sure to install the dependencies:
+Fazil 是一个轻量级、高效且安全的网盘系统，支持多用户访问，适合个人或小型团队的文件管理需求。
+# 关于技术栈
+- 前端 Nuxt + Vue + Naive + TypeScript + Ant Design
+- 后端 Java + SpringBoot + MySQL + Redis
+- 目前兼容debian和ubuntu
 
+## 安装与配置
 ```bash
-# npm
-npm install
-
-# pnpm
-pnpm install
-
-# yarn
-yarn install
-
-# bun
-bun install
+bash -c "$(curl -sSL https://github.com/Fazil-team/Fazil/releases/download/lastest/install.sh)"
 ```
-
-## Development Server
-
-Start the development server on `http://localhost:3000`:
-
-```bash
-# npm
-npm run dev
-
-# pnpm
-pnpm run dev
-
-# yarn
-yarn dev
-
-# bun
-bun run dev
-```
-
-## Production
-
-Build the application for production:
-
-```bash
-# npm
-npm run build
-
-# pnpm
-pnpm run build
-
-# yarn
-yarn build
-
-# bun
-bun run build
-```
-
-Locally preview production build:
-
-```bash
-# npm
-npm run preview
-
-# pnpm
-pnpm run preview
-
-# yarn
-yarn preview
-
-# bun
-bun run preview
-```
-
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
+默认端口为本地:8080端口 进入安装页面 请以Releases页面为准
