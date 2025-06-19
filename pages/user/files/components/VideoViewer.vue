@@ -13,7 +13,11 @@ const viewer = reactive({
   url: ``,
   show: async (file) => {
     console.log('file', file)
-    viewer.url = `${baseURL}/stream/video/preview/${file.fileId}/index.m3u8`
+    if(file.fileId == '-1'){
+      viewer.url = `${baseURL}/stream/ex/download?fileAbsPath=${file.fileAbsPath}&filePath=${file.filePath}`
+    }else {
+      viewer.url = `${baseURL}/stream/video/preview/${file.fileId}/index.m3u8`
+    }
     console.log('playerRef', playerRef.value)
     setTimeout(()=>{
       if (playerRef.value) {

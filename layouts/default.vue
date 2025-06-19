@@ -402,10 +402,9 @@ watch(()=>path.value, (value, oldValue, onCleanup)=>{
                             style="height: calc(100vh - 6rem);display: flex;align-items: center;padding: 1rem 1rem;width: 100%;">
             <NuxtPage :keepalive/>
           </n-layout-content>
-          <n-layout-footer bordered style="height: 3rem;display: flex;align-items: center;padding: 0 0 0 1rem">Powered
-            By Virus_Cui <span style="margin-left: 1rem;font-weight: 800;">V {{ version }}</span>
-            <ICP color="#000" />
-
+          <n-layout-footer bordered style="height: 3rem;display: flex;align-items: center;padding: 0 0 0 1rem;font-weight: 100;">Powered
+              By Virus_Cui @ Fazil
+            <ICP color="#000" style="margin-left: 1rem"/>
           </n-layout-footer>
         </n-layout>
       </n-layout>
@@ -428,7 +427,7 @@ watch(()=>path.value, (value, oldValue, onCleanup)=>{
                 :default-file-list="user?.avatar != null ? [
                     {
                       id: 'c',
-          name: '我是自带url的图片.png',
+          name: 'avatar.png',
           status: 'finished',
           url: baseURL+`/common/resource/avatar?user_id=${user?.id}`
                     }
@@ -445,6 +444,8 @@ watch(()=>path.value, (value, oldValue, onCleanup)=>{
 </template>
 
 <style scoped>
+
+
 :deep(.n-menu > .n-menu-item:first-child > .n-menu-item-content.n-menu-item-content--selected::before) {
   background: none;
 }

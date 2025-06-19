@@ -12,16 +12,17 @@ import * as msg from '~/assets/utils/message'
 import {useSettingStore} from "~/store/UseSettingStore";
 import {storeToRefs} from "pinia";
 const sys_setting = storeToRefs(useSettingStore()).setting
+import AButton from 'ant-design-vue/lib/button'
 
-let interval = setInterval(()=>{
-  useHead({
-    title: `${sys_setting.value.title}｜我的分享`,
-  })
+let interval = setInterval(() => {
+  if(sys_setting.value.title){
+    useHead({
+      title: `${sys_setting.value.title}｜ 我的分享`,
+    })
+    clearInterval(interval)
+  }
 }, 100)
 
-onUnmounted(()=>{
-  clearInterval(interval)
-})
 definePageMeta({
   name: `我的分享 `,
   parent: null
@@ -101,7 +102,7 @@ const columns = [
     width: '260',
     render(row) {
       return h('div', null, [
-        h(NButton, {
+        h(AButton, {
           onClick: () => {
             navigator.clipboard.writeText(row.share.shareUrl)
             msg.success("复制成功")
@@ -110,7 +111,7 @@ const columns = [
           type: 'primary'
 
           }, '复制下载链接'),
-        h(NButton, {
+        h(AButton, {
           onClick: () => {
             loading.value = true
             apis.delete_share(row.share.shareId).then(response => {
@@ -118,7 +119,8 @@ const columns = [
             })
           },
           size: 'small',
-          type: 'error',
+          type: "primary",
+          danger: true,
           style: 'margin-left: 1rem'
         }, '删除')
       ])
@@ -127,8 +129,9 @@ const columns = [
 ]
 const init = ()=>{
   loading.value = true
-  load_all_shares().then(res=>{
-    tb_data.value = res
+  load_all_shares(pagination.pageSize, pagination.page, '').then(res=>{
+    tb_data.value = res.data
+    pagination.itemCount = res.total
     loading.value = false
   })
 }
@@ -142,7 +145,7 @@ onMounted(()=>{
 <template>
   <div>
     <n-card>
-      <n-button style="margin-bottom: 1rem;" @click="init()">查询</n-button>
+      <a-button style="margin-bottom: 1rem;" type="primary" @click="init()">查询</a-button>
       <n-data-table
           :style="{ height: `${height}` }"
           flex-height

@@ -61,15 +61,15 @@ defineExpose({
         分享文件 - {{dialog.data.fileName}}
       </template>
       <n-form label-placement="left">
-        <n-form-item label="有效期" path="user.name">
+        <n-form-item label="到期日期" path="user.name">
           <n-date-picker format="yyyy-MM-dd HH:mm:ss" value-format="yyyy-MM-dd HH:mm:ss" style="width: 100%" v-model:formatted-value="dialog.data.shareExpireTime" placeholder="请选择过期时间"/>
         </n-form-item>
         <n-form-item label="提取码">
           <div>
+<!--            <div>-->
+<!--              <n-checkbox v-model:checked="dialog.data.hasCode">有提取码</n-checkbox>-->
+<!--            </div>-->
             <div>
-              <n-checkbox v-model:checked="dialog.data.hasCode">有提取码</n-checkbox>
-            </div>
-            <div v-if="dialog.data.hasCode">
               <n-radio-group v-model:value="dialog.data.codeGenType">
                 <n-radio value="random">系统随机生成提取码</n-radio>
                 <n-radio value="custom">

@@ -27,13 +27,20 @@ const props = defineProps(['row'])
   <Video class="colorful-icon" v-if="props.row.fileType=='media' && props.row.fileAvatar == null"/>
   <n-image
       style="zoom: .5;"
-      v-if="props.row.fileType == 'media' && props.row.fileAvatar != null"
+      v-if="props.row.fileId == -1 && props.row.fileAvatar != null && props.row.fileType == 'img'"
+      width="100"
+      :src="`${baseURL}/stream/ex/download?fileAbsPath=${props.row.fileAbsPath}&filePath=${props.row.filePath}`"
+  />
+
+  <n-image
+      style="zoom: .5;"
+      v-else-if="props.row.fileType == 'media' && props.row.fileAvatar != null"
       width="100"
       :src="`${baseURL}/stream/video/avatar/${props.row.fileId}`"
   />
   <n-image
       style="zoom: .3;"
-      v-if="props.row.fileType == 'img'"
+      v-else-if="props.row.fileType == 'img'"
       width="100"
       :src="`${baseURL}/stream/download_file?file_id=${props.row.fileId}`"
   />

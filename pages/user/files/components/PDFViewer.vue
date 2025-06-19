@@ -6,7 +6,11 @@ const viewer = reactive({
   open: false,
   url: ``,
   show(row){
-    viewer.url = `${baseURL}/stream/download_file?file_id=${row.fileId}`
+    if(row.fileId == -1){
+      viewer.url = `${baseURL}/stream/ex/download?fileAbsPath=${row.fileAbsPath}&filePath=${row.filePath}`
+    }else {
+      viewer.url = `${baseURL}/stream/download_file?file_id=${row.fileId}`
+    }
     viewer.open = true
   }
 })

@@ -12,10 +12,13 @@ import Notify from "~/pages/dashboard/components/Notify.vue";
 const sys_setting = storeToRefs(useSettingStore()).setting
 const user = storeToRefs(useUserStore()).user_info
 
-let interval = setInterval(()=>{
-  useHead({
-    title: `${sys_setting.value.title}｜概览`,
-  })
+let interval = setInterval(() => {
+  if(sys_setting.value.title){
+    useHead({
+      title: `${sys_setting.value.title}｜ 概览`,
+    })
+    clearInterval(interval)
+  }
 }, 100)
 
 
@@ -43,10 +46,6 @@ const init = ()=>{
 
 onMounted(()=>{
   init()
-})
-
-onUnmounted(()=>{
-  clearInterval(interval)
 })
 
 

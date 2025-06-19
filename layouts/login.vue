@@ -308,10 +308,6 @@ let interval = setInterval(()=>{useHead({
   title: `${sys_setting.value.title}｜ 欢迎您`,
 })},100)
 
-onUnmounted(()=>{
-  clearInterval(interval)
-})
-
 const jump_in = ()=>{
   localStorage.setItem("Authorization", <string>user.value?.token)
   layout.value = 'default'

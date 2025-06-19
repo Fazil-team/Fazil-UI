@@ -4,35 +4,40 @@ import {definePageMeta} from "#imports";
 import {onUnmounted, reactive, ref} from "vue";
 import FileIcon from "~/pages/user/files/components/FileIcon.vue";
 import ActiveBar from "~/pages/user/files/components/ActiveBar.vue";
-import * as apis from "./apis";
+import * as apis from "~/pages/user/files/apis";
 import {size2Str} from "assets/utils/commons";
 import {load_all_shares} from "~/pages/user/share/api/index";
 import {NButton} from 'naive-ui'
 import AButton from 'ant-design-vue/lib/button'
 import * as msg from '~/assets/utils/message'
-import { useSettingStore} from "~/store/UseSettingStore";
+import {useSettingStore} from "~/store/UseSettingStore";
 import {storeToRefs} from "pinia";
-import {real_del} from "./apis";
+import NewStorageDialog from "~/pages/user/storage/dialog/new-storage-dialog.vue";
+import {all, del} from "~/pages/user/storage/api/index.js";
+import ChangeStorageDialog from "~/pages/user/storage/dialog/change-storage-dialog.vue";
+import StorageIcon from './component/storage-icon.vue'
 const sys_setting = storeToRefs(useSettingStore()).setting
+
+
 let interval = setInterval(() => {
   if(sys_setting.value.title){
     useHead({
-      title: `${sys_setting.value.title}｜ 回收站`,
+      title: `${sys_setting.value.title}｜ 空间配置`,
     })
     clearInterval(interval)
   }
 }, 100)
 
-
 definePageMeta({
-  name: `回收站 `,
+  name: `空间配置 `,
   parent: null
 });
 
 const tb_data = ref()
 const loading = ref()
 const height = ref()
-
+const newStorageDialog = ref()
+const changeStorageDialog = ref()
 
 const pagination = reactive({
   page: 1, //受控模式下的当前页
@@ -58,35 +63,21 @@ const pagination = reactive({
 
 const columns = [
   {
-    title: '',
-    width: "40",
+    title: '文件名称',
+    key: 'name',
+    width: '200px',
     render(row) {
-      return h(FileIcon, {
-        row: row
-      })
+      return h('span', {}, row.name)
     }
   },
   {
-    title: '文件名称',
-    key: 'fileName',
+    title: '类型',
+    key: 'type',
     minWidth: '200px',
     render(row) {
-      return h('span', {}, row.fileName)
-    }
-  },
-  {
-    title: '文件大小',
-    width: '100',
-    render(row) {
-      return size2Str(row.fileSize)
-    }
-  },
-  {
-    title: '删除时间',
-    key: 'createTime',
-    width: '180',
-    render(row) {
-      return h('span', {}, row.updateTime)
+      return h(StorageIcon, {
+        type: row.type
+      })
     }
   },
   {
@@ -96,41 +87,38 @@ const columns = [
       return h('div', null, [
         h(AButton, {
           onClick: () => {
-            loading.value = true
-            apis.unMove(row.fileId).then(response => {
-              init()
-            })
+            changeStorageDialog.value.dialog.show(row);
           },
           size: 'small',
-          type: 'error',
-          style: {
-            "margin-right": '1rem'
-          }
-        }, '恢复'),
+          type: "primary"
+        }, '修改'),
         h(AButton, {
           onClick: () => {
             loading.value = true
-            apis.real_del(row.fileId).then(response => {
+            del(row.id).then(res=>{
               init()
             })
           },
           size: 'small',
+          type: "primary",
           danger: true,
-          type: 'primary',
-        }, '彻底删除')
+          style: 'margin-left: 1rem'
+        }, '删除')
       ])
     }
   }
 ]
-const init = ()=>{
+const init = () => {
   loading.value = true
-  apis.load_rec(pagination.pageSize, pagination.page, '1').then(res=>{
+  all(pagination.pageSize, pagination.page).then(res => {
+    console.log(res.data.data)
     tb_data.value = res.data
+    pagination.itemCount = res.total
     loading.value = false
   })
 }
 
-onMounted(()=>{
+onMounted(() => {
   height.value = `calc(100vh - 14rem`;
   init()
 })
@@ -139,7 +127,9 @@ onMounted(()=>{
 <template>
   <div>
     <n-card>
-      <a-button type="primary" style="margin-bottom: 1rem;" @click="init()">查询</a-button>
+      <a-button style="margin-bottom: 1rem;" @click="()=>{
+        newStorageDialog.dialog.show()
+      }" type="primary">添加存储</a-button>
       <n-data-table
           :style="{ height: `${height}` }"
           flex-height
@@ -156,6 +146,8 @@ onMounted(()=>{
       </n-data-table>
     </n-card>
 
+    <new-storage-dialog @success="init()" ref="newStorageDialog" />
+    <change-storage-dialog @success="init()" ref="changeStorageDialog" />
   </div>
 </template>
 

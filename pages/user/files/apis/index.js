@@ -90,7 +90,7 @@ export const add_download_task = (row) => {
 export const remove_file = (file_id) => {
     return new Promise(r => {
         msg.warn_dialog('警告', '确定要删除吗').then(() => {
-            service.delete(`/stream?file_id=${file_id}`).then(res => {
+            service.post(`/stream/del`, file_id).then(res => {
                 layout_api.get_user_storage()
                 r(res)
             })
@@ -150,8 +150,10 @@ export const get_share_user_info = (share_id) => {
 
 export const delete_share = (share_id) => {
     return new Promise(r => {
-        service.delete(`/stream/shares/${share_id}`).then(res => {
-            r(res)
+        msg.warn_dialog("警告", "确定要删除吗").then(()=>{
+            service.delete(`/stream/shares/${share_id}`).then(res => {
+                r(res)
+            })
         })
     })
 }

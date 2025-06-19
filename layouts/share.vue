@@ -16,9 +16,7 @@ let interval = setInterval(()=>{useHead({
   title: `${sys_setting.value.title}｜ 文件分享`,
 })},100)
 
-onUnmounted(()=>{
-  clearInterval(interval)
-})
+
 const router = useRouter();
 
 const onFinish = () => {

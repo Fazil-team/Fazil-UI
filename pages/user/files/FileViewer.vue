@@ -85,7 +85,7 @@ const columns = [
           // apis.add_download_task(row)
         },
         onDelete: () => {
-          apis.remove_file(row.fileId).then(res => {
+          apis.remove_file(row).then(res => {
             init()
           })
         },
@@ -103,7 +103,11 @@ const columns = [
     title: '文件大小',
     width: '100',
     render(row) {
-      return size2Str(row.fileSize)
+      if (row.fileType == 'folder') {
+        return ""
+      } else {
+        return size2Str(row.fileSize)
+      }
     }
   },
   {
@@ -131,6 +135,7 @@ const columns = [
 const tb_data = ref([{}])
 const checkedRowKeys = ref([])
 const filePath = ref('/')
+const fileName = ref("")
 const filePid = ref(0)
 const pagination = reactive({
   page: 1, //受控模式下的当前页
@@ -162,8 +167,9 @@ const init = () => {
   apis.load_files({
     current_page: pagination.page,
     page_size: pagination.pageSize,
-    path: filePath.value,
-    sort: sort_style.value
+    path: encodeURIComponent(filePath.value),
+    sort: sort_style.value,
+    fileName: fileName.value
   }).then(res => {
     loading.value = false
     tb_data.value = res.data.data.data
@@ -175,20 +181,10 @@ const init = () => {
   })
 }
 
-const sort = (data)=>{
+const sort = (data) => {
   sort_style.value = data?.order
   init()
 }
-
-let interval = setInterval(() => {
-  useHead({
-    title: `${sys_setting.value.title}｜我的文件`,
-  })
-}, 100)
-
-onUnmounted(() => {
-  clearInterval(interval)
-})
 
 definePageMeta({
   name: '我的文件',
@@ -211,10 +207,11 @@ const options: DropdownOption[] = [
   },
   {
     label: '分享',
-    key: 'share'
+    key: 'share',
+    disabled: false
   },
   {
-    label: '添加下载任务',
+    label: '下载',
     key: 'download'
   },
   {
@@ -228,7 +225,12 @@ const onClickoutside = () => {
 }
 
 const download = (fileInfo) => {
-  window.open(`${baseURL}/stream/download_file?file_id=${fileInfo.fileId}`)
+  console.log()
+  if (fileInfo?.fileId == -1 && fileInfo.fileType !== 'folder') {
+    window.open(`${baseURL}/stream/ex/download?fileAbsPath=${fileInfo.fileAbsPath}&filePath=${fileInfo.filePath}`)
+  } else if (fileInfo.fileId != -1) {
+    window.open(`${baseURL}/stream/download_file?file_id=${fileInfo.fileId}`)
+  }
 }
 
 const handleSelect = (str) => {
@@ -239,7 +241,7 @@ const handleSelect = (str) => {
       download(current)
       break
     case 'delete':
-      apis.remove_file(current.fileId).then(res => {
+      apis.remove_file(current).then(res => {
         init()
       })
       break
@@ -288,6 +290,11 @@ const rowProps = (row) => {
       current_row.value = row
       nextTick().then(() => {
         showDropdown.value = true;
+        if (row.fileId == -1 || row.fileType == 'folder') {
+          options[2].disabled = true
+        } else {
+          options[2].disabled = false
+        }
         x.value = e.clientX;
         y.value = e.clientY;
       });
@@ -353,15 +360,18 @@ const previous = () => {
       <a-button type="primary" @click="previous()">上一级</a-button>
     </n-card>
     <n-card style="margin-top: 1rem;">
+      <template #header-extra>
+        <n-input v-model:value="fileName" @change="()=>{
+          init()
+        }" size="tiny" placeholder="请输入文件名称(不支持第三方存储，仅支持本机存储)"></n-input>
+      </template>
       <template #header>
         我的文件
         <div style="height: 1.3rem">
           <n-tag type="primary">根目录</n-tag>
-          <span v-for="(item, index) in path().paths"> > <n-tag v-if="index == path().paths.length-1"
-                                                                type="success">{{ item }}</n-tag> <n-tag v-else
-                                                                                                         type="primary">{{
-              item
-            }}</n-tag></span>
+          <span v-for="(item, index) in path().paths"> >
+            <n-button v-if="index == path().paths.length-1" type="success">{{ item }}</n-button>
+            <n-button v-else type="primary">{{ item }}</n-button></span>
         </div>
       </template>
 
