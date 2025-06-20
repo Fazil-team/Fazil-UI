@@ -11,6 +11,7 @@ import Video from "assets/icon/colorful/Video.vue"
 import {baseURL} from "assets/config/network.js";
 import PDF from "assets/icon/colorful/PDF.vue";
 import Txt from "assets/icon/colorful/Txt.vue";
+import D3 from '@/assets/icon/colorful/3D.vue';
 
 const props = defineProps(['row'])
 </script>
@@ -25,11 +26,12 @@ const props = defineProps(['row'])
   <PDF class="colorful-icon" v-if="props.row.fileType=='pdf'"/>
   <Txt class="colorful-icon" v-if="props.row.fileType=='txt'"/>
   <Video class="colorful-icon" v-if="props.row.fileType=='media' && props.row.fileAvatar == null"/>
+  <D3 class="colorful-icon" v-if="props.row.fileType=='3d'"/>
   <n-image
       style="zoom: .5;"
       v-if="props.row.fileId == -1 && props.row.fileAvatar != null && props.row.fileType == 'img'"
       width="100"
-      :src="`${baseURL}/stream/ex/download?fileAbsPath=${props.row.fileAbsPath}&filePath=${props.row.filePath}`"
+      :src="`${baseURL}/stream/ex/download?fileAbsPath=${encodeURIComponent(props.row.fileAbsPath)}&filePath=${encodeURIComponent(props.row.filePath)}`"
   />
 
   <n-image

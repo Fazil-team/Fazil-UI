@@ -22,6 +22,7 @@ import {baseURL} from "assets/config/network";
 const sys_setting: Ref<Setting | any> = storeToRefs(useSettingStore()).setting
 
 let id = useRouter().currentRoute.value.params.id;
+const router = useRouter();
 const upload_file_dialog = ref()
 const loading = ref(false)
 const height = ref("400px")
@@ -195,6 +196,9 @@ const current_row = ref()
 
 import Excel from "assets/icon/colorful/Excel.vue";
 import FileName from "~/pages/user/files/components/FileName.vue";
+import {useRouter} from "#app";
+import Home from "assets/icon/colorful/Home.vue";
+import Folder from "assets/icon/colorful/Folder.vue";
 
 const options: DropdownOption[] = [
   {
@@ -227,9 +231,9 @@ const onClickoutside = () => {
 const download = (fileInfo) => {
   console.log()
   if (fileInfo?.fileId == -1 && fileInfo.fileType !== 'folder') {
-    window.open(`${baseURL}/stream/ex/download?fileAbsPath=${fileInfo.fileAbsPath}&filePath=${fileInfo.filePath}`)
+    window.open(`${baseURL}/stream/ex/download?fileAbsPath=${encodeURIComponent(fileInfo.fileAbsPath)}&filePath=${encodeURIComponent(fileInfo.filePath)}`)
   } else if (fileInfo.fileId != -1) {
-    window.open(`${baseURL}/stream/download_file?file_id=${fileInfo.fileId}`)
+    window.open(`${baseURL}/stream/download_file?file_id=${encodeURIComponent(fileInfo.fileId)}`)
   }
 }
 
@@ -267,7 +271,7 @@ interface Song {
 const file_name_click = (row) => {
   switch (row.fileType) {
     case 'doc':
-      doc_viewer_ref.value.viewer.show(row.fileId)
+      doc_viewer_ref.value.viewer.show(row)
       break
     case 'pdf':
       pdf_viewer_ref.value.viewer.show(row)
@@ -349,6 +353,12 @@ const previous = () => {
     path: path1
   })
 }
+
+function getPathUntil(arr, index) {
+  if (!Array.isArray(arr)) throw new Error('路径必须是数组');
+  if (index < 0 || index >= arr.length) throw new Error('下标越界了你想干嘛？');
+  return '/' + arr.slice(0, index + 1).join('/');
+}
 </script>
 
 <template>
@@ -368,10 +378,36 @@ const previous = () => {
       <template #header>
         我的文件
         <div style="height: 1.3rem">
-          <n-tag type="primary">根目录</n-tag>
-          <span v-for="(item, index) in path().paths"> >
-            <n-button v-if="index == path().paths.length-1" type="success">{{ item }}</n-button>
-            <n-button v-else type="primary">{{ item }}</n-button></span>
+          <a-link @click="()=>{
+            router.push({
+              path: '/user/files'
+            })
+          }">
+            <template #icon>
+              <home />
+            </template>
+            根目录
+          </a-link>
+          <span v-for="(item, index) in path().paths">
+            <a-link v-if="index == path().paths.length-1" @click="">
+            <template #icon>
+              <folder />
+            </template>
+            {{ item }}
+          </a-link>
+            <a-link v-else @click="()=>{
+            router.push({
+              path: '/user/files'+getPathUntil(path().paths, index)
+            })
+          }">
+            <template #icon>
+              <folder />
+            </template>
+            {{ item }}
+          </a-link>
+<!--            <n-button v-if="index == path().paths.length-1" type="success">{{ item }}</n-button>-->
+<!--            <n-button v-else type="primary">{{ item }}</n-button>-->
+          </span>
         </div>
       </template>
 
@@ -431,6 +467,7 @@ const previous = () => {
 :deep(.n-data-table-tr) {
   .active-item {
     color: rgba(0 0 0 / 0);
+    transition: all .2s;
     transition: all .2s;
 
   }

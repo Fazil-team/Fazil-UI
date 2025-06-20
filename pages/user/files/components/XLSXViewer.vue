@@ -1,8 +1,13 @@
 <script setup>
 import {onMounted, reactive} from "vue";
 import {baseURL} from "assets/config/network.js";
-
+import VueOfficeExcel from '@vue-office/excel'
+import '@vue-office/excel/lib/index.css'
+import VueOfficeDocx from "@vue-office/docx";
 const excel = ref()
+const src = ref()
+const show = ref(false)
+const row_raw = ref()
 let XLSX = ref(null);
 
 
@@ -13,16 +18,17 @@ const load_modules = async () => {
 
 const viewer = reactive({
   open: false,
-  url: ``,
-  show: async (row) => {
-    await load_modules()
-    viewer.url = `${baseURL}/stream/download_file?file_id=${row.fileId}`
-    const file = await (await fetch(viewer.url)).arrayBuffer();
-    const workbook = XLSX.value.read(file);
-    var first_sheet = workbook.Sheets[workbook.SheetNames[0]];
-    let s = XLSX.value.utils.sheet_to_html(first_sheet, {header: '', footer: ''});
-    excel.value = s
+  show(file){
+    row_raw.value = file
     viewer.open = true
+    if(file.fileId == -1){
+      src.value = `${baseURL}/stream/ex/download?fileAbsPath=${encodeURIComponent(file.fileAbsPath)}&filePath=${encodeURIComponent(file.filePath)}`
+    }else {
+      src.value= `${baseURL}/stream/download_file?file_id=${file.fileId}`
+    }    setTimeout(()=>{
+      show.value = true
+    },0)
+    // previewfile(file)
   }
 })
 
@@ -34,24 +40,22 @@ defineExpose({
 
 <template>
   <n-modal v-model:show="viewer.open">
-    <n-card
-        style="width: 800px"
-        title="Excel预览"
-        :bordered="true"
-        role="dialog"
-        aria-modal="true"
-    >
-      <template #header>
-        创建文件夹
-      </template>
-      <div class="excel-bar" v-html="excel"></div>
-      <template #footer>
-        <div style="display: flex;justify-content: right">
-          <n-button type="primary" @click="viewer.open = false">确定</n-button>
-        </div>
-      </template>
-    </n-card>
+    <div style="width: 100%; background: white">
+      <div style="width: 100%; height: 5vh;background: white;font-size: 1.2rem;font-weight: 800;line-height: 5vh;padding-left: 1rem">
+        Excel预览 - {{row_raw?.fileName}}
+      </div>
+      <div style="width: 100%;height: 90vh;overflow: auto" :loading="!show" tip="This may take a while...">
+        <vue-office-excel style="width: 100%; height: 90vh" v-if="show" :src="src"/>
+        <div v-else style="padding: 4rem;background: #FFF">预览失败(暂不支持.doc文件)</div>
+      </div>
+      <div style="width: 100%; height: 5vh; display: flex;justify-content: end; align-items: center;padding-right: 1rem">
+        <a-button type="primary" @click="()=>{
+          viewer.open = false
+        }">关闭</a-button>
+      </div>
+    </div>
 
+<!--    <div v-else>123</div>-->
   </n-modal>
 </template>
 

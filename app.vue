@@ -47,14 +47,14 @@ onMounted(()=>{
 .page-enter-active,
 .page-leave-active {
   opacity: 1;
-  transform: translate(0) scale(1);
-  transition: all .3s;
+  //transform: translate(0) scale(1);
+  transition: all .1s ease-in-out;
 }
 
 .page-enter-from,
 .page-leave-to {
-  filter: blur(8px);
-  transform: translateY(-20px) scale(.9);
+  //filter: blur(8px);
+  //transform: translateY(-20px) scale(.9);
   opacity: 0;
   //filter: blur(.6rem);
 }

@@ -2,34 +2,28 @@
 import {ref, reactive, onMounted} from "vue";
 import { renderAsync } from "docx-preview";
 let docx = import.meta.glob("docx-preview");
-import {review_file} from '../apis'
-
-const previewfile = (id: string) => {
-  review_file(id).then(response=>{
-    let docData = new Blob([response.data]);
-    console.log("data", docData)
-    let docxDiv = document.getElementsByClassName("docxDiv");
-    console.log('div',docxDiv)
-    renderAsync(docData, docxDiv, null, {
-      inWrapper: true, // 启用围绕文档内容渲染包装器
-      ignoreWidth: false, // 禁止页面渲染宽度
-      ignoreHeight: false, // 禁止页面渲染高度
-      ignoreFonts: false, // 禁止字体渲染
-      breakPages: true, // 在分页符上启用分页
-      ignoreLastRenderedPageBreak: true, //禁用lastRenderedPageBreak元素的分页
-      experimental: false, //启用实验性功能（制表符停止计算）
-      trimXmlDeclaration: true, //如果为真，xml声明将在解析之前从xml文档中删除
-      debug: false,
-    }).then((res) => {
-    });
-  })
-};
-
+import {baseURL} from "assets/config/network";
+import VueOfficeDocx from "@vue-office/docx";
+import VueOfficePdf from "@vue-office/pdf";
+const src = ref()
+const error = ref(false)
+const show = ref(false)
+const row_raw = ref()
 const viewer = reactive({
   open: false,
-  show(id: string){
+  show(file){
+    row_raw.value = file;
+    console.log(123)
     viewer.open = true
-    previewfile(id)
+    if(file.fileId == -1){
+      src.value = `${baseURL}/stream/ex/download?fileAbsPath=${encodeURIComponent(file.fileAbsPath)}&filePath=${encodeURIComponent(file.filePath)}`
+    }else {
+      src.value= `${baseURL}/stream/download_file?file_id=${file.fileId}`
+    }
+    setTimeout(()=>{
+      show.value = true
+    },100)
+    // previewfile(file)
   }
 })
 
@@ -40,27 +34,28 @@ defineExpose({
 
 <template>
   <n-modal v-model:show="viewer.open">
-    <n-card
-        style="width: 800px;"
-        title="Word预览"
-        :bordered="true"
-        role="dialog"
-        aria-modal="true"
-    >
-      <template #header>
-        创建文件夹
-      </template>
-      <div
-          ref="docxDiv"
-          class="docxDiv"
-      ></div>
-      <template #footer>
-        <div style="display: flex;justify-content: right">
-          <n-button type="primary" @click="viewer.open = false">确定</n-button>
-        </div>
-      </template>
-    </n-card>
-
+    <div style="width: 100%; background: white">
+      <div style="width: 100%; height: 5vh;background: white;font-size: 1.2rem;font-weight: 800;line-height: 5vh;padding-left: 1rem">
+        Word预览 - {{row_raw?.fileName}}
+      </div>
+      <div style="width: 100%;height: 90vh;overflow: auto" :loading="!show" tip="This may take a while...">
+        <vue-office-docx v-if="show" :src="src" @error="()=>{
+        error = true
+        show = false
+      }"/>
+        <div v-else style="padding: 4rem;background: #FFF">预览失败(暂不支持.doc文件)</div>
+      </div>
+      <div style="width: 100%; height: 5vh; display: flex;justify-content: end; align-items: center;padding-right: 1rem">
+        <a-button type="primary" @click="()=>{
+          viewer.open = false
+        }">关闭</a-button>
+      </div>
+    </div>
+<!--      <vue-office-docx v-if="show" :src="src" @error="()=>{-->
+<!--        error = true-->
+<!--        show = false-->
+<!--      }"/>-->
+<!--      <div v-else style="padding: 4rem;background: #FFF">预览失败(暂不支持.doc文件)</div>-->
   </n-modal>
 
 </template>
