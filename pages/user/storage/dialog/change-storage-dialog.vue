@@ -31,6 +31,10 @@ const storage_types = [
   {
     label: 'WebDAV',
     value: 'webdav'
+  },
+  {
+    label: 'FTP',
+    value: 'ftp'
   }
 ]
 
@@ -81,6 +85,25 @@ defineExpose({
           </n-form-item>
           <n-form-item label="WebDav密码">
             <n-input type="password" v-model:value="dialog.data.config.password" placeholder="请输WebDav密码"></n-input>
+          </n-form-item>
+        </section>
+        <!-- FTP 表单 -->
+        <section v-if="dialog.data.type == 'ftp'">
+          <n-form-item label="FTP地址">
+            <n-input v-model:value="dialog.data.config.host" placeholder="请输入FTP地址"></n-input>
+          </n-form-item>
+          <n-form-item label="FTP端口">
+            <n-input-number style="width: 100%" v-model:value="dialog.data.config.port"
+                            placeholder="请输入FTP地址"></n-input-number>
+          </n-form-item>
+          <n-form-item label="映射地址">
+            <n-input v-model:value="dialog.data.name" placeholder="请输入映射地址"></n-input>
+          </n-form-item>
+          <n-form-item label="FTP用户名">
+            <n-input v-model:value="dialog.data.config.username" placeholder="请输入FTP地址"></n-input>
+          </n-form-item>
+          <n-form-item label="FTP密码">
+            <n-input type="password" v-model:value="dialog.data.config.password" placeholder="请输FTP地址"></n-input>
           </n-form-item>
         </section>
       </n-form>

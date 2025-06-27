@@ -7,7 +7,6 @@ export const genQueryParam = (data) => {
 };
 
 export const size2Str = (size) => {
-    console.log( '123' ,size >Math.pow(1024, 3), size)
     if (size < 1024) {
         return size + ` B`;
     } else if (size >= 1024 && size < Math.pow(1024, 2)) {

@@ -33,7 +33,6 @@ onMounted(() => {
   share_code.value = router.currentRoute.value.query.pwd;
   share_id.value = router.currentRoute.value.query.id;
   get_share_user_info(share_id.value).then(res=>{
-    console.log(res)
     shareInfo.value = res.data.data
   })
 })
@@ -44,7 +43,6 @@ const check = () => {
       fileInfo.value = res.data.data
       isChecked.value = true
     }
-    console.log(res)
   })
 }
 

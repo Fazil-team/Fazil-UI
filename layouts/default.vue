@@ -96,7 +96,6 @@ setInterval(()=>{
 
 watch(()=>small.value, (value)=>{
   collapsed.value = small.value
-  console.log(value)
 })
 
 
@@ -172,7 +171,6 @@ const init = async () => {
   }
   if(user.value){
     let genRouterPaths = await gen_router_paths(user.value.menus);
-    console.log(genRouterPaths)
     genRouterPaths.unshift(header)
     menuOptions.value = genRouterPaths
     loading.value = false
@@ -256,11 +254,9 @@ const upload_avatar = (options)=>{
 }
 
 watch(()=>path.value, (value, oldValue, onCleanup)=>{
-  console.log(value.startsWith("/user/files"))
   if(value.startsWith("/user/files")){
     path.value = "/user/files";
   }
-  console.log('path',path.value)
 })
 
 </script>

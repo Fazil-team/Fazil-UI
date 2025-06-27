@@ -154,17 +154,21 @@ const pagination = reactive({
     init();
   },
   onPageSizeChange: pageSize => {
+    console.log(pageSize)
     pagination.pageSize = pageSize;
+    console.log(pagination.pageSize)
     pagination.page = 1;
     init();
   },
 });
-
 const sort_style = ref()
-
+const route = useRoute();
+const page_size = route.query.page_size
+console.log(page_size)
 const init = () => {
   loading.value = true
   height.value = `calc(100vh - ${document.querySelector(".n-card").clientHeight}px - 2rem - 3rem - 10rem - 1.3rem)`;
+  console.log(encodeURIComponent(filePath.value))
   apis.load_files({
     current_page: pagination.page,
     page_size: pagination.pageSize,
@@ -199,6 +203,7 @@ import FileName from "~/pages/user/files/components/FileName.vue";
 import {useRouter} from "#app";
 import Home from "assets/icon/colorful/Home.vue";
 import Folder from "assets/icon/colorful/Folder.vue";
+import {navigateTo} from "#app/composables/router";
 
 const options: DropdownOption[] = [
   {
@@ -229,7 +234,7 @@ const onClickoutside = () => {
 }
 
 const download = (fileInfo) => {
-  console.log()
+  console.log(fileInfo)
   if (fileInfo?.fileId == -1 && fileInfo.fileType !== 'folder') {
     window.open(`${baseURL}/stream/ex/download?fileAbsPath=${encodeURIComponent(fileInfo.fileAbsPath)}&filePath=${encodeURIComponent(fileInfo.filePath)}`)
   } else if (fileInfo.fileId != -1) {
@@ -312,9 +317,12 @@ const rowProps = (row) => {
           } else {
             path = `${useRouter().currentRoute.value.path}/${row.fileName}`
           }
-          console.log(path)
+          console.log("path" + path)
           navigateTo({
-            path: path
+            path: path,
+            query: {
+              page_size: pagination.pageSize
+            }
           })
           break
       }
@@ -323,6 +331,7 @@ const rowProps = (row) => {
 }
 
 onMounted(() => {
+  pagination.pageSize = page_size == undefined?10:page_size
   init()
 })
 
@@ -350,7 +359,10 @@ const previous = () => {
   let path1 = path.substring(0, number)
   console.log(path1)
   navigateTo({
-    path: path1
+    path: path1,
+    query: {
+      page_size: pagination.pageSize
+    }
   })
 }
 
@@ -379,34 +391,40 @@ function getPathUntil(arr, index) {
         我的文件
         <div style="height: 1.3rem">
           <a-link @click="()=>{
-            router.push({
-              path: '/user/files'
+            navigateTo({
+              path: '/user/files',
+              query: {
+                page_size: pagination.pageSize
+              }
             })
           }">
             <template #icon>
-              <home />
+              <home/>
             </template>
             根目录
           </a-link>
           <span v-for="(item, index) in path().paths">
             <a-link v-if="index == path().paths.length-1" @click="">
             <template #icon>
-              <folder />
+              <folder/>
             </template>
             {{ item }}
           </a-link>
             <a-link v-else @click="()=>{
-            router.push({
-              path: '/user/files'+getPathUntil(path().paths, index)
-            })
+              navigateTo({
+                path: '/user/files'+getPathUntil(path().paths, index),
+                query: {
+                  page_size: pagination.pageSize
+                }
+              })
           }">
             <template #icon>
-              <folder />
+              <folder/>
             </template>
             {{ item }}
           </a-link>
-<!--            <n-button v-if="index == path().paths.length-1" type="success">{{ item }}</n-button>-->
-<!--            <n-button v-else type="primary">{{ item }}</n-button>-->
+            <!--            <n-button v-if="index == path().paths.length-1" type="success">{{ item }}</n-button>-->
+            <!--            <n-button v-else type="primary">{{ item }}</n-button>-->
           </span>
         </div>
       </template>

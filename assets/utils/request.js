@@ -30,7 +30,6 @@ service.interceptors.response.use(
                 return res;
             }else{
                 storeToRefs(useLayoutStore()).layout.value = 'login'
-                console.log( storeToRefs(useLayoutStore()).layout.value)
                 msg.err(res.data.msg)
             }
         } else if (res.data?.code === 3) {

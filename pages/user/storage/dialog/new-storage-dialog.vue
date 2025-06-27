@@ -4,7 +4,7 @@ import {checkConnect, newStorage} from "~/pages/user/storage/api";
 import * as msg from '@/assets/utils/message';
 
 const emits = defineEmits(['success'])
-
+const loading = ref(false)
 const dialog = reactive({
   title: '创建外部存储',
   open: false,
@@ -14,7 +14,7 @@ const dialog = reactive({
     success: false,
     config: {},
   },
-  show: ()=>{
+  show: () => {
     Object.assign(dialog.data, {
       type: 'webdav',
       name: '',
@@ -23,7 +23,7 @@ const dialog = reactive({
     })
     dialog.open = true
   },
-  close: ()=>{
+  close: () => {
     dialog.open = false
   }
 })
@@ -32,16 +32,25 @@ const storage_types = [
   {
     label: 'WebDAV',
     value: 'webdav'
+  },
+  {
+    label: 'FTP',
+    value: 'ftp'
   }
 ]
 
-const check = ()=>{
-  checkConnect(dialog.data).then(res=>{
+const check = () => {
+  loading.value = true;
+  dialog.data.success = false;
+  checkConnect(dialog.data).then(res => {
     dialog.data.success = true
-  });
+    loading.value = false;
+  }).catch(e => {
+    loading.value = false;
+  })
 }
-const submit = ()=>{
-  newStorage(dialog.data).then(res=>{
+const submit = () => {
+  newStorage(dialog.data).then(res => {
     dialog.close()
     emits('success')
   })
@@ -60,30 +69,51 @@ defineExpose({
             :bordered="true"
             role="dialog"
             aria-modal="true">
-      <n-form>
-        <n-form-item label="存储类型">
-          <n-select v-model:value="dialog.data.type" placeholder="请选择存储类型" :items="storage_types" />
-        </n-form-item>
-        <!-- WebDAV 表单 -->
-        <section v-if="dialog.data.type == 'webdav'">
-          <n-form-item label="WebDAV地址">
-            <n-input v-model:value="dialog.data.config.baseUrl" placeholder="请输入WebDAV地址"></n-input>
+      <n-spin :spinning="loading">
+        <n-form>
+          <n-form-item label="存储类型">
+            <n-select v-model:value="dialog.data.type" placeholder="请选择存储类型" :items="storage_types"/>
           </n-form-item>
-          <n-form-item label="WebDav文件夹">
-            <n-input v-model:value="dialog.data.config.folder" placeholder="请输入WebDav文件夹"></n-input>
-          </n-form-item>
-          <n-form-item label="映射地址">
-            <n-input v-model:value="dialog.data.name" placeholder="请输入映射地址"></n-input>
-          </n-form-item>
-          <n-form-item label="WebDav用户名">
-            <n-input v-model:value="dialog.data.config.username" placeholder="请输入WebDav用户名"></n-input>
-          </n-form-item>
-          <n-form-item label="WebDav密码">
-            <n-input type="password" v-model:value="dialog.data.config.password" placeholder="请输WebDav密码"></n-input>
-          </n-form-item>
-        </section>
-      </n-form>
-
+          <!-- WebDAV 表单 -->
+          <section v-if="dialog.data.type == 'webdav'">
+            <n-form-item label="WebDAV地址">
+              <n-input v-model:value="dialog.data.config.baseUrl" placeholder="请输入WebDAV地址"></n-input>
+            </n-form-item>
+            <n-form-item label="WebDav文件夹">
+              <n-input v-model:value="dialog.data.config.folder" placeholder="请输入WebDav文件夹"></n-input>
+            </n-form-item>
+            <n-form-item label="映射地址">
+              <n-input v-model:value="dialog.data.name" placeholder="请输入映射地址"></n-input>
+            </n-form-item>
+            <n-form-item label="WebDav用户名">
+              <n-input v-model:value="dialog.data.config.username" placeholder="请输入WebDav用户名"></n-input>
+            </n-form-item>
+            <n-form-item label="WebDav密码">
+              <n-input type="password" v-model:value="dialog.data.config.password"
+                       placeholder="请输WebDav密码"></n-input>
+            </n-form-item>
+          </section>
+          <!-- FTP 表单 -->
+          <section v-if="dialog.data.type == 'ftp'">
+            <n-form-item label="FTP地址">
+              <n-input v-model:value="dialog.data.config.host" placeholder="请输入FTP地址"></n-input>
+            </n-form-item>
+            <n-form-item label="FTP端口">
+              <n-input-number style="width: 100%" v-model:value="dialog.data.config.port"
+                              placeholder="请输入FTP地址"></n-input-number>
+            </n-form-item>
+            <n-form-item label="映射地址">
+              <n-input v-model:value="dialog.data.name" placeholder="请输入映射地址"></n-input>
+            </n-form-item>
+            <n-form-item label="FTP用户名">
+              <n-input v-model:value="dialog.data.config.username" placeholder="请输入FTP地址"></n-input>
+            </n-form-item>
+            <n-form-item label="FTP密码">
+              <n-input type="password" v-model:value="dialog.data.config.password" placeholder="请输FTP地址"></n-input>
+            </n-form-item>
+          </section>
+        </n-form>
+      </n-spin>
       <template #footer>
         <div style="display: flex;justify-content: end">
           <n-space>

@@ -2,10 +2,12 @@ import {service} from '@/assets/utils/request.js'
 import {success} from "assets/utils/message";
 
 export const checkConnect = (data) => {
-    return new Promise(r => {
+    return new Promise((resolve, reject) => {
         service.post('/expansion/check_connect', data).then(res => {
             success("连接成功！")
-            r(res)
+            resolve(res)
+        }).catch(e=>{
+            reject(e);
         })
     })
 }
